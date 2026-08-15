@@ -28,7 +28,7 @@ function createDb() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
       date TEXT NOT NULL,
-      mood TEXT NOT NULL,
+      mood TEXT,
       note TEXT,
       UNIQUE(user_id, date)
     );
@@ -68,6 +68,17 @@ function createDb() {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
+
+  // 迁移：允许 mood 为 NULL（支持「只记便签、不填心情」）
+  const moodCols = db.prepare('PRAGMA table_info(moods)').all();
+  const moodCol = moodCols.find((c) => c.name === 'mood');
+  if (moodCol && (moodCol.notnull === 1 || moodCol.notnull === '1')) {
+    db.exec('ALTER TABLE moods RENAME TO moods_old');
+    db.exec('CREATE TABLE moods (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, date TEXT NOT NULL, mood TEXT, note TEXT, UNIQUE(user_id, date))');
+    db.exec('INSERT INTO moods (id, user_id, date, mood, note) SELECT id, user_id, date, mood, note FROM moods_old');
+    db.exec('DROP TABLE moods_old');
+    console.log('[db] migrated moods.mood to nullable');
+  }
 
   seedDrinks(db);
   return db;

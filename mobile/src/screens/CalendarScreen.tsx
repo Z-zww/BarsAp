@@ -6,7 +6,8 @@ import { api } from '../api';
 import { MoodRecord } from '../types';
 import { localDateStr, monthStr } from '../dates';
 import { theme, spacing } from '../theme';
-import MoodPicker from '../components/MoodPicker';
+import { MOOD_MAP } from '../moods';
+import DayEditor from '../components/DayEditor';
 
 const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 const ACCENTS = ['#E07A5F', '#C2410C', '#0E7490', '#7C3AED', '#15803D', '#BE185D'];
@@ -18,9 +19,7 @@ export default function CalendarScreen() {
   const { user } = useAuth();
   const [cursor, setCursor] = useState(new Date());
   const [moodMap, setMoodMap] = useState<Record<string, MoodRecord>>({});
-  const [pickerVisible, setPickerVisible] = useState(false);
-  const [pickerDate, setPickerDate] = useState(localDateStr());
-  const [selected, setSelected] = useState<{ date: string; record: MoodRecord | null } | null>(null);
+  const [editing, setEditing] = useState<{ date: string; record: MoodRecord | null } | null>(null);
   const [accent, setAccent] = useState(theme.colors.primary);
 
   useEffect(() => {
@@ -52,19 +51,20 @@ export default function CalendarScreen() {
   const today = localDateStr();
   const move = (delta: number) => setCursor(new Date(year, month + delta, 1));
 
-  const onPressDay = (day: number) => {
+  const openDay = (day: number) => {
     const date = year + '-' + pad2(month + 1) + '-' + pad2(day);
-    if (date === today) { setPickerDate(date); setPickerVisible(true); }
-    else setSelected({ date, record: moodMap[date] || null });
+    setEditing({ date, record: moodMap[date] || null });
   };
 
-  const onSelectMood = async (slug: string, note?: string) => {
-    setPickerVisible(false);
-    try { await api.saveMood(pickerDate, slug, note); await load(); } catch (e) {}
+  const onSaveDay = async (mood: string | null, note: string | null) => {
+    if (!editing) return;
+    const date = editing.date;
+    setEditing(null);
+    try { await api.saveMood(date, mood, note); await load(); } catch (e) {}
   };
 
   const moodCounts: Record<string, number> = {};
-  for (const r of Object.values(moodMap)) moodCounts[r.mood] = (moodCounts[r.mood] || 0) + 1;
+  for (const r of Object.values(moodMap)) if (r.mood) moodCounts[r.mood] = (moodCounts[r.mood] || 0) + 1;
   const summary = Object.entries(moodCounts);
 
   return (
@@ -96,46 +96,45 @@ export default function CalendarScreen() {
               const rec = moodMap[date];
               const isToday = date === today;
               const wd = new Date(year, month, day).getDay();
+              const hasMood = !!(rec && rec.mood);
+              const hasNote = !!(rec && rec.note);
               return (
-                <TouchableOpacity key={day} style={styles.cell} onPress={() => onPressDay(day)}>
+                <TouchableOpacity key={day} style={styles.cell} onPress={() => openDay(day)}>
                   <View style={[styles.dayInner, isToday && { backgroundColor: accent }]}>
                     <Text style={[styles.dayNum, isToday && styles.todayText, (wd === 0 || wd === 6) && !isToday && styles.weekend]}>{day}</Text>
-                    {rec ? <Text style={styles.dayEmoji}>{rec.emoji}</Text> : <Text style={styles.dayEmpty}> </Text>}
+                    {hasMood ? <Text style={styles.dayEmoji}>{rec!.emoji}</Text> : hasNote ? <Text style={styles.dayEmoji}>📝</Text> : <Text style={styles.dayEmpty}> </Text>}
+                    {hasMood && hasNote ? <View style={[styles.noteDot, { backgroundColor: isToday ? '#fff' : accent }]} /> : null}
                   </View>
                 </TouchableOpacity>
               );
             })}
           </View>
-          <TouchableOpacity style={[styles.recordBtn, { backgroundColor: accent }]} onPress={() => { setPickerDate(today); setPickerVisible(true); }}>
+          <TouchableOpacity style={[styles.recordBtn, { backgroundColor: accent }]} onPress={() => openDay(Number(today.slice(-2)))}>
             <Text style={styles.recordBtnText}>记录 / 修改今天的心情</Text>
           </TouchableOpacity>
+          <Text style={styles.tip}>💡 点任意日期可补填当天心情、写便签</Text>
 
           {summary.length > 0 ? (
             <View style={styles.summaryCard}>
               <Text style={styles.summaryTitle}>本月心情</Text>
               <View style={styles.summaryRow}>
                 {summary.map(([slug, count]) => {
-                  const m = (require('../moods').MOOD_MAP as Record<string, { emoji: string; label: string }>)[slug];
+                  const m = MOOD_MAP[slug];
                   return <View key={slug} style={styles.summaryChip}><Text style={styles.summaryEmoji}>{m ? m.emoji : slug}</Text><Text style={styles.summaryCount}>×{count}</Text></View>;
                 })}
               </View>
             </View>
           ) : null}
-
-          {selected ? (
-            <View style={styles.selectedCard}>
-              <Text style={styles.selectedDate}>{selected.date}</Text>
-              {selected.record ? (
-                <Text style={styles.selectedMood}>{selected.record.emoji} {selected.record.label}</Text>
-              ) : (
-                <Text style={styles.selectedMood}>这一天没有记录</Text>
-              )}
-              {selected.record && selected.record.note ? <Text style={styles.selectedNote}>{selected.record.note}</Text> : null}
-            </View>
-          ) : null}
         </>
       )}
-      <MoodPicker visible={pickerVisible} onSelect={onSelectMood} onSkip={() => setPickerVisible(false)} />
+      <DayEditor
+        visible={!!editing}
+        date={editing ? editing.date : ''}
+        initialMood={editing && editing.record ? editing.record.mood : null}
+        initialNote={editing && editing.record ? editing.record.note : null}
+        onSave={onSaveDay}
+        onClose={() => setEditing(null)}
+      />
     </ScrollView>
   );
 }
@@ -163,16 +162,14 @@ const styles = StyleSheet.create({
   todayText: { color: '#fff', fontWeight: '800' },
   dayEmoji: { fontSize: 15, marginTop: 1 },
   dayEmpty: { fontSize: 15, opacity: 0 },
+  noteDot: { width: 5, height: 5, borderRadius: 3, marginTop: 2 },
   recordBtn: { borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', marginTop: spacing(5) },
   recordBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  tip: { fontSize: 12, color: theme.colors.muted, textAlign: 'center', marginTop: spacing(2) },
   summaryCard: { backgroundColor: theme.colors.card, borderRadius: theme.radius, padding: spacing(4), borderWidth: 1, borderColor: theme.colors.border, marginTop: spacing(4) },
   summaryTitle: { fontSize: 14, fontWeight: '700', color: theme.colors.text, marginBottom: spacing(2) },
   summaryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing(2) },
   summaryChip: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: theme.colors.bg, borderRadius: 999, paddingHorizontal: spacing(2), paddingVertical: 4 },
   summaryEmoji: { fontSize: 16 },
   summaryCount: { fontSize: 13, color: theme.colors.muted, fontWeight: '600' },
-  selectedCard: { backgroundColor: theme.colors.card, borderRadius: theme.radius, padding: spacing(4), borderWidth: 1, borderColor: theme.colors.border, marginTop: spacing(4) },
-  selectedDate: { fontSize: 13, color: theme.colors.muted },
-  selectedMood: { fontSize: 20, fontWeight: '700', color: theme.colors.text, marginTop: spacing(1) },
-  selectedNote: { fontSize: 14, color: theme.colors.muted, marginTop: spacing(2) },
 });

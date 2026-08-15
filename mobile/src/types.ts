@@ -39,7 +39,7 @@ export interface CommentItem {
 
 export interface MoodRecord {
   date: string;
-  mood: string;
+  mood: string | null;
   note: string | null;
   emoji: string;
   label: string;

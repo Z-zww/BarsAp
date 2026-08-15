@@ -139,9 +139,11 @@ app.get('/api/moods', requireAuth(db), (req, res) => {
 app.post('/api/moods', requireAuth(db), (req, res) => {
   const { date, mood, note } = req.body || {};
   if (!isDateStr(date)) return res.status(400).json({ error: 'date 需为 YYYY-MM-DD' });
-  if (!MOOD_MAP[mood]) return res.status(400).json({ error: '未知心情' });
+  if (mood && !MOOD_MAP[mood]) return res.status(400).json({ error: '未知心情' });
+  const m = mood || null;
+  const n = (note === undefined || note === null || note === '') ? null : String(note);
   db.prepare('INSERT INTO moods (user_id, date, mood, note) VALUES (?, ?, ?, ?) ON CONFLICT(user_id, date) DO UPDATE SET mood = excluded.mood, note = excluded.note')
-    .run(req.user.id, date, mood, note || null);
+    .run(req.user.id, date, m, n);
   res.json({ ok: true });
 });
 
