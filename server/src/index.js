@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const https = require('https');
 const { createDb } = require('./db');
 const { hashPassword, verifyPassword, newToken, requireAuth, optionalAuth } = require('./auth');
 const { MOODS, MOOD_MAP } = require('./moods-meta');
@@ -19,6 +20,36 @@ function parseDrink(r) {
     moods: JSON.parse(r.moods), image: r.image, summary: r.summary,
     history: r.history, ingredients: JSON.parse(r.ingredients),
     steps: JSON.parse(r.steps), videos: JSON.parse(r.videos), tags: JSON.parse(r.tags),
+  };
+}
+
+// TheCocktailDB 网络酒品 → 本应用结构
+function mapNetworkDrink(d) {
+  if (!d || !d.strDrink) return null;
+  const ingredients = [];
+  for (let i = 1; i <= 15; i++) {
+    const name = (d['strIngredient' + i] || '').trim();
+    if (name) ingredients.push({ name, amount: (d['strMeasure' + i] || '').trim() });
+  }
+  const steps = (d.strInstructions || '').split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  if (steps.length === 0 && d.strInstructions) steps.push(String(d.strInstructions).trim());
+  const kw = encodeURIComponent((d.strDrink || '') + ' 调酒');
+  return {
+    id: 'net-' + d.idDrink,
+    name: d.strDrink,
+    nameEn: d.strDrink,
+    category: d.strCategory || '经典',
+    moods: [],
+    image: d.strDrinkThumb || '',
+    summary: (d.strCategory || '') + (d.strAlcoholic ? ' · ' + d.strAlcoholic : ''),
+    history: '',
+    ingredients,
+    steps,
+    videos: [
+      { title: '抖音搜「' + d.strDrink + '」', url: 'https://www.douyin.com/search/' + kw },
+      { title: '小红书搜「' + d.strDrink + '」', url: 'https://www.xiaohongshu.com/search_result?keyword=' + kw },
+    ],
+    tags: [d.strGlass || '', d.strCategory || ''].filter(Boolean),
   };
 }
 
@@ -133,6 +164,23 @@ app.get('/api/drinks', (req, res) => {
   }
   const limit = req.query.limit ? Math.min(parseInt(req.query.limit, 10) || 50, 50) : rows.length;
   res.json(rows.slice(0, limit));
+});
+
+// 网络酒库搜索（TheCocktailDB，600+ 款）
+app.get('/api/drinks/network', (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (!q) return res.json([]);
+  const url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + encodeURIComponent(q);
+  https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (r) => {
+    let data = '';
+    r.on('data', (c) => data += c);
+    r.on('end', () => {
+      try {
+        const j = JSON.parse(data);
+        res.json((j.drinks || []).map(mapNetworkDrink).filter(Boolean).slice(0, 20));
+      } catch (e) { res.json([]); }
+    });
+  }).on('error', () => res.json([]));
 });
 
 app.get('/api/drinks/:id', (req, res) => {

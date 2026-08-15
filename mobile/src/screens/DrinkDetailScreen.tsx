@@ -13,11 +13,12 @@ export default function DrinkDetailScreen() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (route.params.drink) { setDrink(route.params.drink); return; }
     (async () => {
       try { const d: any = await api.drink(route.params.id); setDrink(d); }
       catch (e: any) { setError(e.message || '加载失败'); }
     })();
-  }, [route.params.id]);
+  }, [route.params.id, route.params.drink]);
 
   useLayoutEffect(() => { if (drink) navigation.setOptions({ title: drink.name }); }, [drink, navigation]);
 

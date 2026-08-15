@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -17,7 +17,7 @@ import CreatePostScreen from './src/screens/CreatePostScreen';
 
 export type RootStackParamList = {
   Tabs: undefined;
-  DrinkDetail: { id: string };
+  DrinkDetail: { id: string; drink?: any };
   PostDetail: { id: number };
   CreatePost: undefined;
 };
@@ -56,8 +56,10 @@ function Tabs() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <NavigationContainer>
+    <View style={styles.shell}>
+      <View style={styles.phone}>
+        <AuthProvider>
+          <NavigationContainer>
         <StatusBar style="dark" />
         <Stack.Navigator
           screenOptions={{
@@ -73,7 +75,14 @@ export default function App() {
           <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: '帖子' }} />
           <Stack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: '发布配方' }} />
         </Stack.Navigator>
-      </NavigationContainer>
-    </AuthProvider>
+          </NavigationContainer>
+        </AuthProvider>
+      </View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  shell: { flex: 1, backgroundColor: '#E8E4DE' },
+  phone: { flex: 1, width: '100%', maxWidth: 500, alignSelf: 'center', backgroundColor: theme.colors.bg, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 0 }, elevation: 8 },
+});

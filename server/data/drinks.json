@@ -8,7 +8,7 @@
       "calm",
       "lonely"
     ],
-    "image": "/img/old-fashioned.png",
+    "image": "/img/drinks/old-fashioned.jpg",
     "summary": "威士忌、方糖与苦精的经典组合",
     "history": "古典鸡尾酒可追溯到 19 世纪初，是「鸡尾酒」一词最早的形态之一——烈酒、糖、水与苦精的简单组合。名字来源于 19 世纪末，酒客向酒保点「老式做法」（old fashioned）的威士忌鸡尾酒，以区别于当时花哨的新式调法。它历经禁酒令而存续，至今仍是全球酒吧的基石。",
     "ingredients": [
@@ -40,8 +40,12 @@
     ],
     "videos": [
       {
-        "title": "Old Fashioned 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=old+fashioned+cocktail+recipe"
+        "title": "抖音搜「古典鸡尾酒」教程",
+        "url": "https://www.douyin.com/search/%E5%8F%A4%E5%85%B8%E9%B8%A1%E5%B0%BE%E9%85%92%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「古典鸡尾酒」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E5%8F%A4%E5%85%B8%E9%B8%A1%E5%B0%BE%E9%85%92%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -59,7 +63,7 @@
       "happy",
       "excited"
     ],
-    "image": "/img/margarita.png",
+    "image": "/img/drinks/margarita.jpg",
     "summary": "龙舌兰、君度与青柠的酸甜清爽",
     "history": "玛格丽特是龙舌兰基酒的标志性鸡尾酒，起源众说纷纭，流传最广的说法是 1940 年代墨西哥蒂华纳的一位酒保为一位名为玛格丽特的女士调制。也有说法称它是「龙舌兰酸」（Tequila Sour）的变体。盐边是其标志，恰到好处地平衡了酸甜与酒香。",
     "ingredients": [
@@ -91,8 +95,12 @@
     ],
     "videos": [
       {
-        "title": "Margarita 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=margarita+cocktail+recipe"
+        "title": "抖音搜「玛格丽特」教程",
+        "url": "https://www.douyin.com/search/%E7%8E%9B%E6%A0%BC%E4%B8%BD%E7%89%B9%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「玛格丽特」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E7%8E%9B%E6%A0%BC%E4%B8%BD%E7%89%B9%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -110,7 +118,7 @@
       "happy",
       "excited"
     ],
-    "image": "/img/mojito.png",
+    "image": "/img/drinks/mojito.jpg",
     "summary": "朗姆、薄荷与青柠的夏日清爽",
     "history": "莫吉托起源于古巴哈瓦那，前身可追溯到 16 世纪的「德拉盖」（El Draque）。它在 20 世纪因作家海明威的钟爱而闻名于世，是朗姆酒与薄荷、青柠、苏打水的清新组合，成为古巴与热带风情的代表。",
     "ingredients": [
@@ -146,8 +154,12 @@
     ],
     "videos": [
       {
-        "title": "Mojito 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=mojito+cocktail+recipe"
+        "title": "抖音搜「莫吉托」教程",
+        "url": "https://www.douyin.com/search/%E8%8E%AB%E5%90%89%E6%89%98%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「莫吉托」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E8%8E%AB%E5%90%89%E6%89%98%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -165,7 +177,7 @@
       "happy",
       "excited"
     ],
-    "image": "/img/cosmopolitan.png",
+    "image": "/img/drinks/cosmopolitan.jpg",
     "summary": "伏特加、蔓越莓与青柠的粉红酸甜",
     "history": "大都会在 1980-90 年代流行起来，被视为伏特加基酒「马提尼家族」的现代成员。它以伏特加、君度、蔓越莓汁与青柠汁调制，酸甜平衡、色泽粉红，因美剧《欲望都市》而风靡全球。",
     "ingredients": [
@@ -197,8 +209,12 @@
     ],
     "videos": [
       {
-        "title": "Cosmopolitan 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=cosmopolitan+cocktail+recipe"
+        "title": "抖音搜「大都会」教程",
+        "url": "https://www.douyin.com/search/%E5%A4%A7%E9%83%BD%E4%BC%9A%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「大都会」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E5%A4%A7%E9%83%BD%E4%BC%9A%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -216,7 +232,7 @@
       "calm",
       "angry"
     ],
-    "image": "/img/negroni.png",
+    "image": "/img/drinks/negroni.jpg",
     "summary": "金酒、金巴利与味美思的苦甜经典",
     "history": "尼格罗尼诞生于 1919 年左右的意大利佛罗伦萨，据传是卡米洛·尼格罗尼伯爵要求把 Americano 中的苏打水换成金酒而来。金酒、金巴利与甜味美思等比例调制，苦甜交织，是意式开胃酒的代表。",
     "ingredients": [
@@ -248,8 +264,12 @@
     ],
     "videos": [
       {
-        "title": "Negroni 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=negroni+cocktail+recipe"
+        "title": "抖音搜「尼格罗尼」教程",
+        "url": "https://www.douyin.com/search/%E5%B0%BC%E6%A0%BC%E7%BD%97%E5%B0%BC%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「尼格罗尼」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E5%B0%BC%E6%A0%BC%E7%BD%97%E5%B0%BC%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -266,7 +286,7 @@
     "moods": [
       "tired"
     ],
-    "image": "/img/espresso-martini.png",
+    "image": "/img/drinks/espresso-martini.jpg",
     "summary": "伏特加与浓缩咖啡的提神之选",
     "history": "浓缩咖啡马提尼由伦敦调酒师迪克·布拉德塞尔于 1980 年代发明，据说应一位模特「先让我清醒，再让我醉」的要求而创。伏特加、浓缩咖啡与咖啡利口酒摇出绵密泡沫，兼具提神与微醺。",
     "ingredients": [
@@ -302,8 +322,12 @@
     ],
     "videos": [
       {
-        "title": "Espresso Martini 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=espresso+martini+cocktail+recipe"
+        "title": "抖音搜「浓缩咖啡马提尼」教程",
+        "url": "https://www.douyin.com/search/%E6%B5%93%E7%BC%A9%E5%92%96%E5%95%A1%E9%A9%AC%E6%8F%90%E5%B0%BC%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「浓缩咖啡马提尼」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E6%B5%93%E7%BC%A9%E5%92%96%E5%95%A1%E9%A9%AC%E6%8F%90%E5%B0%BC%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -321,7 +345,7 @@
       "happy",
       "excited"
     ],
-    "image": "/img/pina-colada.png",
+    "image": "/img/drinks/pina-colada.jpg",
     "summary": "朗姆、椰浆与菠萝的热带甜美",
     "history": "椰林飘香诞生于波多黎各，1954 年由圣胡安卡里贝希尔顿酒店的酒保拉蒙·马雷罗创作，名字意为「压碎的菠萝」。朗姆、椰浆与菠萝汁的组合后来成为波多黎各的国饮，是热带度假的象征。",
     "ingredients": [
@@ -357,8 +381,12 @@
     ],
     "videos": [
       {
-        "title": "Piña Colada 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=pina+colada+cocktail+recipe"
+        "title": "抖音搜「椰林飘香」教程",
+        "url": "https://www.douyin.com/search/%E6%A4%B0%E6%9E%97%E9%A3%98%E9%A6%99%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「椰林飘香」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E6%A4%B0%E6%9E%97%E9%A3%98%E9%A6%99%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -376,7 +404,7 @@
       "calm",
       "tired"
     ],
-    "image": "/img/gin-tonic.png",
+    "image": "/img/drinks/gin-tonic.jpg",
     "summary": "金酒与汤力水的清爽苦甜",
     "history": "金汤力起源于 19 世纪英属印度，为对抗疟疾，英军服用含奎宁的汤力水，因味苦而加入金酒与青柠。由此诞生了这款清爽微苦、气泡感十足的长饮，至今风靡全球。",
     "ingredients": [
@@ -404,8 +432,12 @@
     ],
     "videos": [
       {
-        "title": "Gin & Tonic 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=gin+and+tonic+recipe"
+        "title": "抖音搜「金汤力」教程",
+        "url": "https://www.douyin.com/search/%E9%87%91%E6%B1%A4%E5%8A%9B%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「金汤力」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E9%87%91%E6%B1%A4%E5%8A%9B%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -424,7 +456,7 @@
       "tired",
       "lonely"
     ],
-    "image": "/img/hot-toddy.png",
+    "image": "/img/drinks/hot-toddy.jpg",
     "summary": "威士忌、蜂蜜与柠檬的暖心热饮",
     "history": "热托迪是历史悠久的冬日暖饮，起源常被追溯到 18 世纪的苏格兰或爱尔兰，被视为治疗感冒与驱寒的民间良方。威士忌、热水、蜂蜜与柠檬的组合温暖柔和，在寒冷或低落时尤其抚慰人心。",
     "ingredients": [
@@ -456,8 +488,12 @@
     ],
     "videos": [
       {
-        "title": "Hot Toddy 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=hot+toddy+cocktail+recipe"
+        "title": "抖音搜「热托迪」教程",
+        "url": "https://www.douyin.com/search/%E7%83%AD%E6%89%98%E8%BF%AA%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「热托迪」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E7%83%AD%E6%89%98%E8%BF%AA%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -475,7 +511,7 @@
       "happy",
       "excited"
     ],
-    "image": "/img/daiquiri.png",
+    "image": "/img/drinks/daiquiri.jpg",
     "summary": "朗姆、青柠与糖的极简酸甜",
     "history": "代基里诞生于 19 世纪末的古巴，名字来自圣地亚哥附近的代基里矿区，最初是矿工与工程师用当地朗姆、青柠与糖调制的饮品。海明威对其情有独钟，使其成为经典的三元素鸡尾酒典范。",
     "ingredients": [
@@ -502,8 +538,12 @@
     ],
     "videos": [
       {
-        "title": "Daiquiri 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=daiquiri+cocktail+recipe"
+        "title": "抖音搜「代基里」教程",
+        "url": "https://www.douyin.com/search/%E4%BB%A3%E5%9F%BA%E9%87%8C%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「代基里」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E4%BB%A3%E5%9F%BA%E9%87%8C%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -521,7 +561,7 @@
       "calm",
       "sad"
     ],
-    "image": "/img/whisky-sour.png",
+    "image": "/img/drinks/whisky-sour.jpg",
     "summary": "威士忌、柠檬与糖的酸香平衡",
     "history": "威士忌酸是「酸酒家族」（Sour）最著名的成员，19 世纪中叶即见于调酒文献。威士忌、柠檬汁与糖（常加蛋清使口感绵密）构成酸甜平衡的经典结构，历经百年仍是酒吧常青款。",
     "ingredients": [
@@ -557,8 +597,12 @@
     ],
     "videos": [
       {
-        "title": "Whiskey Sour 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=whiskey+sour+cocktail+recipe"
+        "title": "抖音搜「威士忌酸」教程",
+        "url": "https://www.douyin.com/search/%E5%A8%81%E5%A3%AB%E5%BF%8C%E9%85%B8%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「威士忌酸」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E5%A8%81%E5%A3%AB%E5%BF%8C%E9%85%B8%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -576,7 +620,7 @@
       "happy",
       "calm"
     ],
-    "image": "/img/aperol-spritz.png",
+    "image": "/img/drinks/aperol-spritz.jpg",
     "summary": "阿佩罗、普罗塞克与苏打的橙色气泡",
     "history": "阿佩罗橙光源自意大利北部的「Spritz」传统，即在白葡萄酒中兑水。20 世纪以来演变为阿佩罗、普罗塞克起泡酒与苏打水的组合，色泽橙红、气泡轻盈，成为意大利乃至全球最流行的开胃酒之一。",
     "ingredients": [
@@ -608,8 +652,12 @@
     ],
     "videos": [
       {
-        "title": "Aperol Spritz 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=aperol+spritz+recipe"
+        "title": "抖音搜「阿佩罗橙光」教程",
+        "url": "https://www.douyin.com/search/%E9%98%BF%E4%BD%A9%E7%BD%97%E6%A9%99%E5%85%89%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「阿佩罗橙光」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E9%98%BF%E4%BD%A9%E7%BD%97%E6%A9%99%E5%85%89%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -627,7 +675,7 @@
       "tired",
       "angry"
     ],
-    "image": "/img/bloody-mary.png",
+    "image": "/img/drinks/bloody-mary.jpg",
     "summary": "伏特加、番茄汁与香料的咸鲜",
     "history": "血腥玛丽诞生于 1920 年代的巴黎，由酒保费尔南·帕蒂奥在哈利纽约酒吧创作，以番茄汁与伏特加为基础，加入多种香料。名字传说取自英格兰女王玛丽一世，如今是全球知名的「醒酒」咸鲜鸡尾酒。",
     "ingredients": [
@@ -671,8 +719,12 @@
     ],
     "videos": [
       {
-        "title": "Bloody Mary 调酒教程",
-        "url": "https://www.youtube.com/results?search_query=bloody+mary+cocktail+recipe"
+        "title": "抖音搜「血腥玛丽」教程",
+        "url": "https://www.douyin.com/search/%E8%A1%80%E8%85%A5%E7%8E%9B%E4%B8%BD%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「血腥玛丽」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E8%A1%80%E8%85%A5%E7%8E%9B%E4%B8%BD%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
@@ -690,7 +742,7 @@
       "calm",
       "anxious"
     ],
-    "image": "/img/virgin-mojito.png",
+    "image": "/img/drinks/virgin-mojito.jpg",
     "summary": "无酒精版莫吉托，薄荷青柠气泡饮",
     "history": "无酒精莫吉托是经典莫吉托的去酒精版本，保留薄荷、青柠与苏打水的清新风味，以糖浆与苏打水替代朗姆酒。它让不饮酒或想保持清醒的人也能享受清爽气泡与草本香气，是酒吧常见的「Mocktail」代表。",
     "ingredients": [
@@ -722,14 +774,449 @@
     ],
     "videos": [
       {
-        "title": "Virgin Mojito 教程",
-        "url": "https://www.youtube.com/results?search_query=virgin+mojito+mocktail+recipe"
+        "title": "抖音搜「无酒精莫吉托」教程",
+        "url": "https://www.douyin.com/search/%E6%97%A0%E9%85%92%E7%B2%BE%E8%8E%AB%E5%90%89%E6%89%98%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「无酒精莫吉托」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E6%97%A0%E9%85%92%E7%B2%BE%E8%8E%AB%E5%90%89%E6%89%98%20%E8%B0%83%E9%85%92"
       }
     ],
     "tags": [
       "无酒精",
       "清爽",
       "薄荷"
+    ]
+  },
+  {
+    "id": "martini",
+    "name": "马提尼",
+    "nameEn": "Martini",
+    "category": "经典",
+    "moods": [
+      "calm"
+    ],
+    "summary": "金酒与干味美思的优雅经典",
+    "history": "马提尼是鸡尾酒之王，起源众说纷纭，多认为与 19 世纪加州马丁内斯镇（Martinez）有关，是金酒与味美思的经典组合。它因「摇匀，不要搅拌」的詹姆斯·邦德而家喻户晓，是优雅与克制的象征。",
+    "ingredients": [
+      {
+        "name": "金酒",
+        "amount": "60ml"
+      },
+      {
+        "name": "干味美思",
+        "amount": "10ml"
+      },
+      {
+        "name": "橄榄或柠檬皮",
+        "amount": "装饰"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "金酒与干味美思加冰搅拌至冰冷",
+      "滤入冰镇马提尼杯",
+      "橄榄或柠檬皮装饰"
+    ],
+    "tags": [
+      "金酒",
+      "经典",
+      "优雅"
+    ],
+    "image": "/img/drinks/martini.jpg",
+    "videos": [
+      {
+        "title": "抖音搜「马提尼」教程",
+        "url": "https://www.douyin.com/search/%E9%A9%AC%E6%8F%90%E5%B0%BC%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「马提尼」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E9%A9%AC%E6%8F%90%E5%B0%BC%20%E8%B0%83%E9%85%92"
+      }
+    ]
+  },
+  {
+    "id": "manhattan",
+    "name": "曼哈顿",
+    "nameEn": "Manhattan",
+    "category": "经典",
+    "moods": [
+      "calm"
+    ],
+    "summary": "威士忌与甜味美思的醇厚经典",
+    "history": "曼哈顿诞生于 19 世纪末的纽约曼哈顿俱乐部，据传是丘吉尔母亲的宴会上为市长候选人调制。黑麦威士忌、甜味美思与苦精构成醇厚平衡的经典，与马提尼并列为两大经典调酒。",
+    "ingredients": [
+      {
+        "name": "黑麦/波本威士忌",
+        "amount": "60ml"
+      },
+      {
+        "name": "甜味美思",
+        "amount": "30ml"
+      },
+      {
+        "name": "安哥斯图拉苦精",
+        "amount": "2 滴"
+      },
+      {
+        "name": "樱桃",
+        "amount": "装饰"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "所有材料加冰搅拌约 30 秒",
+      "滤入冰镇鸡尾酒杯",
+      "樱桃装饰"
+    ],
+    "tags": [
+      "威士忌",
+      "经典",
+      "醇厚"
+    ],
+    "image": "/img/drinks/manhattan.jpg",
+    "videos": [
+      {
+        "title": "抖音搜「曼哈顿」教程",
+        "url": "https://www.douyin.com/search/%E6%9B%BC%E5%93%88%E9%A1%BF%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「曼哈顿」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E6%9B%BC%E5%93%88%E9%A1%BF%20%E8%B0%83%E9%85%92"
+      }
+    ]
+  },
+  {
+    "id": "moscow-mule",
+    "name": "莫斯科骡子",
+    "nameEn": "Moscow Mule",
+    "category": "清爽",
+    "moods": [
+      "happy"
+    ],
+    "summary": "伏特加与姜汁啤酒的清爽气泡",
+    "history": "莫斯科骡子诞生于 1941 年的美国，由伏特加、姜汁啤酒与青柠调制，因装在标志性的铜杯中而闻名。名字中的「莫斯科」与「骡子」分别暗指伏特加的俄式渊源与姜汁啤酒的「后劲」。",
+    "ingredients": [
+      {
+        "name": "伏特加",
+        "amount": "50ml"
+      },
+      {
+        "name": "姜汁啤酒",
+        "amount": "120ml"
+      },
+      {
+        "name": "青柠汁",
+        "amount": "15ml"
+      },
+      {
+        "name": "青柠角",
+        "amount": "装饰"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "铜杯或高球杯加满冰块",
+      "倒入伏特加与青柠汁",
+      "补满姜汁啤酒，青柠角装饰"
+    ],
+    "tags": [
+      "伏特加",
+      "气泡",
+      "清爽"
+    ],
+    "image": "/img/drinks/moscow-mule.jpg",
+    "videos": [
+      {
+        "title": "抖音搜「莫斯科骡子」教程",
+        "url": "https://www.douyin.com/search/%E8%8E%AB%E6%96%AF%E7%A7%91%E9%AA%A1%E5%AD%90%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「莫斯科骡子」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E8%8E%AB%E6%96%AF%E7%A7%91%E9%AA%A1%E5%AD%90%20%E8%B0%83%E9%85%92"
+      }
+    ]
+  },
+  {
+    "id": "sidecar",
+    "name": "边车",
+    "nameEn": "Sidecar",
+    "category": "经典",
+    "moods": [
+      "excited"
+    ],
+    "summary": "白兰地、君度与柠檬的酸甜",
+    "history": "边车诞生于一战后的巴黎，相传是一位常坐摩托车边车的军官常点的酒。白兰地、君度橙酒与柠檬汁构成经典的「三合一」结构，酸甜平衡、酒香浓郁。",
+    "ingredients": [
+      {
+        "name": "白兰地",
+        "amount": "50ml"
+      },
+      {
+        "name": "君度橙酒",
+        "amount": "25ml"
+      },
+      {
+        "name": "柠檬汁",
+        "amount": "25ml"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "所有材料加冰摇匀",
+      "滤入糖边马提尼杯",
+      "柠檬皮装饰"
+    ],
+    "tags": [
+      "白兰地",
+      "酸甜",
+      "经典"
+    ],
+    "image": "/img/drinks/sidecar.jpg",
+    "videos": [
+      {
+        "title": "抖音搜「边车」教程",
+        "url": "https://www.douyin.com/search/%E8%BE%B9%E8%BD%A6%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「边车」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E8%BE%B9%E8%BD%A6%20%E8%B0%83%E9%85%92"
+      }
+    ]
+  },
+  {
+    "id": "french-75",
+    "name": "法兰西 75",
+    "nameEn": "French 75",
+    "category": "清爽",
+    "moods": [
+      "happy",
+      "excited"
+    ],
+    "summary": "金酒与香槟的优雅气泡",
+    "history": "法兰西 75 得名于一战时期法国 75 毫米野战炮，形容其强劲后劲。金酒、柠檬汁、糖与香槟组合，气泡轻盈而酒力十足，是庆典与聚会的经典之选。",
+    "ingredients": [
+      {
+        "name": "金酒",
+        "amount": "45ml"
+      },
+      {
+        "name": "柠檬汁",
+        "amount": "20ml"
+      },
+      {
+        "name": "糖浆",
+        "amount": "10ml"
+      },
+      {
+        "name": "香槟",
+        "amount": "60ml"
+      },
+      {
+        "name": "柠檬皮",
+        "amount": "装饰"
+      }
+    ],
+    "steps": [
+      "金酒、柠檬汁与糖浆加冰摇匀",
+      "滤入香槟杯",
+      "补入香槟，柠檬皮装饰"
+    ],
+    "tags": [
+      "金酒",
+      "气泡",
+      "庆典"
+    ],
+    "image": "/img/drinks/french-75.jpg",
+    "videos": [
+      {
+        "title": "抖音搜「法兰西 75」教程",
+        "url": "https://www.douyin.com/search/%E6%B3%95%E5%85%B0%E8%A5%BF%2075%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「法兰西 75」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E6%B3%95%E5%85%B0%E8%A5%BF%2075%20%E8%B0%83%E9%85%92"
+      }
+    ]
+  },
+  {
+    "id": "pisco-sour",
+    "name": "皮斯科酸",
+    "nameEn": "Pisco Sour",
+    "category": "经典",
+    "moods": [
+      "calm"
+    ],
+    "summary": "皮斯科、柠檬与蛋清的绵密酸香",
+    "history": "皮斯科酸是秘鲁与智利的国酒级鸡尾酒，以拉美特产皮斯科白兰地为基酒，加入柠檬汁、糖浆、蛋清与苦精。蛋清摇出绵密泡沫，口感柔滑、酸香平衡。",
+    "ingredients": [
+      {
+        "name": "皮斯科酒",
+        "amount": "60ml"
+      },
+      {
+        "name": "柠檬汁",
+        "amount": "25ml"
+      },
+      {
+        "name": "糖浆",
+        "amount": "15ml"
+      },
+      {
+        "name": "蛋清",
+        "amount": "15ml"
+      },
+      {
+        "name": "苦精",
+        "amount": "2 滴"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "材料先干摇（加蛋清）再冰摇",
+      "滤入古典杯或马提尼杯",
+      "表面滴苦精装饰"
+    ],
+    "tags": [
+      "白兰地",
+      "蛋清",
+      "经典"
+    ],
+    "image": "/img/drinks/pisco-sour.jpg",
+    "videos": [
+      {
+        "title": "抖音搜「皮斯科酸」教程",
+        "url": "https://www.douyin.com/search/%E7%9A%AE%E6%96%AF%E7%A7%91%E9%85%B8%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「皮斯科酸」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E7%9A%AE%E6%96%AF%E7%A7%91%E9%85%B8%20%E8%B0%83%E9%85%92"
+      }
+    ]
+  },
+  {
+    "id": "mai-tai",
+    "name": "迈泰",
+    "nameEn": "Mai Tai",
+    "category": "热带",
+    "moods": [
+      "happy",
+      "excited"
+    ],
+    "summary": "朗姆与柑橘杏仁的热带风情",
+    "history": "迈泰由「Tiki 之父」维克·伯格伦于 1944 年在加州创制，名字在塔希提语中意为「好极了」。它以两种朗姆、橙皮利口酒、杏仁糖浆与青柠构成浓郁的热带风味。",
+    "ingredients": [
+      {
+        "name": "朗姆酒",
+        "amount": "60ml"
+      },
+      {
+        "name": "橙皮利口酒",
+        "amount": "15ml"
+      },
+      {
+        "name": "杏仁糖浆",
+        "amount": "10ml"
+      },
+      {
+        "name": "青柠汁",
+        "amount": "20ml"
+      },
+      {
+        "name": "薄荷与青柠",
+        "amount": "装饰"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "所有材料加冰摇匀",
+      "滤入加冰的古典杯",
+      "薄荷与青柠装饰"
+    ],
+    "tags": [
+      "朗姆",
+      "热带",
+      "浓郁"
+    ],
+    "image": "/img/drinks/mai-tai.jpg",
+    "videos": [
+      {
+        "title": "抖音搜「迈泰」教程",
+        "url": "https://www.douyin.com/search/%E8%BF%88%E6%B3%B0%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「迈泰」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E8%BF%88%E6%B3%B0%20%E8%B0%83%E9%85%92"
+      }
+    ]
+  },
+  {
+    "id": "white-russian",
+    "name": "白色俄罗斯",
+    "nameEn": "White Russian",
+    "category": "浓郁",
+    "moods": [
+      "tired",
+      "calm"
+    ],
+    "summary": "伏特加、咖啡利口与奶油的丝滑",
+    "history": "白色俄罗斯是「黑色俄罗斯」加奶油的变体，诞生于 1960 年代，因电影《谋杀绿脚趾》中主角的最爱而广为流传。伏特加、咖啡利口酒与奶油的组合丝滑甜美，如一杯微醺的咖啡。",
+    "ingredients": [
+      {
+        "name": "伏特加",
+        "amount": "50ml"
+      },
+      {
+        "name": "咖啡利口酒",
+        "amount": "25ml"
+      },
+      {
+        "name": "鲜奶油",
+        "amount": "25ml"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "古典杯加满冰块",
+      "倒入伏特加与咖啡利口酒，搅匀",
+      "缓缓倒入鲜奶油浮于表面"
+    ],
+    "tags": [
+      "伏特加",
+      "咖啡",
+      "奶油"
+    ],
+    "image": "/img/drinks/white-russian.jpg",
+    "videos": [
+      {
+        "title": "抖音搜「白色俄罗斯」教程",
+        "url": "https://www.douyin.com/search/%E7%99%BD%E8%89%B2%E4%BF%84%E7%BD%97%E6%96%AF%20%E8%B0%83%E9%85%92"
+      },
+      {
+        "title": "小红书搜「白色俄罗斯」",
+        "url": "https://www.xiaohongshu.com/search_result?keyword=%E7%99%BD%E8%89%B2%E4%BF%84%E7%BD%97%E6%96%AF%20%E8%B0%83%E9%85%92"
+      }
     ]
   }
 ]

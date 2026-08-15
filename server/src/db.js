@@ -78,10 +78,8 @@ function seedDrinks(db) {
   if (!fs.existsSync(file)) return;
   const drinks = JSON.parse(fs.readFileSync(file, 'utf8'));
   if (!Array.isArray(drinks) || drinks.length === 0) return;
-  const existing = db.prepare('SELECT COUNT(*) AS c FROM drinks').get().c;
-  if (existing > 0) return; // 已入库，不重复 seed
   const ins = db.prepare(`
-    INSERT OR IGNORE INTO drinks
+    INSERT OR REPLACE INTO drinks
       (id, name, name_en, category, moods, image, summary, history, ingredients, steps, videos, tags)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
@@ -101,7 +99,7 @@ function seedDrinks(db) {
       JSON.stringify(d.tags || []),
     );
   }
-  console.log('[db] seeded ' + drinks.length + ' drinks');
+  console.log('[db] synced ' + drinks.length + ' drinks');
 }
 
 module.exports = { createDb, DB_PATH };

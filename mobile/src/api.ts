@@ -97,6 +97,7 @@ export const api = {
   saveMood: (date: string, mood: string, note?: string) => request('POST', '/api/moods', { date, mood, note }),
   deleteMood: (date: string) => request('DELETE', '/api/moods/' + encodeURIComponent(date)),
   drinks: (opts?: { mood?: string; q?: string; limit?: number }) => request('GET', '/api/drinks' + qs(opts || {})),
+  drinksNetwork: (q: string) => request('GET', '/api/drinks/network' + qs({ q })),
   drink: (id: string) => request('GET', '/api/drinks/' + encodeURIComponent(id)),
   posts: (sort?: string) => request('GET', '/api/posts' + qs({ sort })),
   post: (id: number) => request('GET', '/api/posts/' + id),
