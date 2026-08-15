@@ -171,6 +171,41 @@ app.get('/api/drinks', (req, res) => {
   res.json(rows.slice(0, limit));
 });
 
+// 确定性洗牌（按日期+批次，保证当天稳定、跨天轮换）
+function hashCode(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return h >>> 0;
+}
+function seededShuffle(arr, seed) {
+  const a = arr.slice();
+  let s = seed;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    const j = s % (i + 1);
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+// 每日推荐：心情匹配优先，按日期+批次轮换，可多推几款
+app.get('/api/drinks/recommend', (req, res) => {
+  const mood = req.query.mood;
+  const date = req.query.date || beijingDate();
+  const batch = parseInt(req.query.batch || '0', 10) || 0;
+  let rows = db.prepare('SELECT * FROM drinks').all().map(parseDrink);
+  if (mood) {
+    const match = rows.filter((d) => d.moods.includes(mood));
+    const rest = rows.filter((d) => !d.moods.includes(mood));
+    rows = seededShuffle(match, hashCode(date + '|' + mood + '|' + batch))
+      .concat(seededShuffle(rest, hashCode(date + '|r|' + batch)));
+  } else {
+    rows = seededShuffle(rows, hashCode(date + '|' + batch));
+  }
+  const limit = Math.min(parseInt(req.query.limit || '6', 10) || 6, 20);
+  res.json(rows.slice(0, limit));
+});
+
 // 网络酒库搜索（TheCocktailDB，600+ 款，支持中英双语 + 中文名）
 app.get('/api/drinks/network', async (req, res) => {
   const rawQ = (req.query.q || '').trim();
@@ -200,9 +235,35 @@ app.get('/api/drinks/:id', (req, res) => {
   res.json(parseDrink(r));
 });
 
+// ---------------- 收藏 / 个人酒库 ----------------
+app.get('/api/favorites', requireAuth(db), (req, res) => {
+  const rows = db.prepare('SELECT * FROM favorites WHERE user_id = ? ORDER BY created_at DESC, id DESC').all(req.user.id);
+  res.json(rows.map((r) => JSON.parse(r.data)));
+});
+
+app.post('/api/favorites', requireAuth(db), (req, res) => {
+  const drink = (req.body || {}).drink || {};
+  const id = drink.id;
+  if (!id) return res.status(400).json({ error: '缺少酒品 id' });
+  const exists = db.prepare('SELECT 1 FROM favorites WHERE user_id = ? AND drink_id = ?').get(req.user.id, id);
+  if (exists) {
+    db.prepare('DELETE FROM favorites WHERE user_id = ? AND drink_id = ?').run(req.user.id, id);
+    return res.json({ favorited: false });
+  }
+  db.prepare('INSERT INTO favorites (user_id, drink_id, name, name_en, image, data) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(req.user.id, id, drink.name || '', drink.nameEn || null, drink.image || null, JSON.stringify(drink));
+  res.json({ favorited: true });
+});
+
 // ---------------- 社区 ----------------
 app.get('/api/posts', optionalAuth(db), (req, res) => {
-  const rows = db.prepare('SELECT p.*, u.username, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id').all();
+  let rows;
+  if (req.query.mine === '1') {
+    if (!req.user) return res.status(401).json({ error: '未登录' });
+    rows = db.prepare('SELECT p.*, u.username, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id WHERE p.user_id = ?').all(req.user.id);
+  } else {
+    rows = db.prepare('SELECT p.*, u.username, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id').all();
+  }
   const meId = req.user ? req.user.id : null;
   const posts = rows.map((r) => parsePost(r, meId));
   if (req.query.sort === 'hot') posts.sort((a, b) => (b.likes_count + b.comments_count * 2) - (a.likes_count + a.comments_count * 2));

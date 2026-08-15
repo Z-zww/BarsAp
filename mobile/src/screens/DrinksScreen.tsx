@@ -51,7 +51,10 @@ export default function DrinksScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>酒库</Text>
+      <View style={styles.headRow}>
+        <Text style={styles.title}>酒库</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('MyLibrary')} style={styles.mineBtn}><Text style={styles.mineText}>⭐ 我的酒库</Text></TouchableOpacity>
+      </View>
       <View style={styles.searchRow}>
         <TextInput
           style={styles.searchInput}
@@ -84,7 +87,10 @@ export default function DrinksScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.bg, paddingTop: spacing(6) },
-  title: { fontSize: 28, fontWeight: '800', color: theme.colors.text, paddingHorizontal: spacing(5) },
+  headRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: spacing(5) },
+  title: { fontSize: 28, fontWeight: '800', color: theme.colors.text },
+  mineBtn: { backgroundColor: theme.colors.card, borderRadius: 999, paddingHorizontal: spacing(3), paddingVertical: spacing(2), borderWidth: 1, borderColor: theme.colors.border },
+  mineText: { fontSize: 14, fontWeight: '700', color: theme.colors.primaryDark },
   searchRow: { flexDirection: 'row', gap: spacing(2), paddingHorizontal: spacing(5), marginTop: spacing(4), marginBottom: spacing(3) },
   searchInput: { flex: 1, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 12, padding: spacing(3), color: theme.colors.text, fontSize: 15, backgroundColor: theme.colors.card },
   searchBtn: { backgroundColor: theme.colors.text, borderRadius: 12, paddingHorizontal: spacing(4), justifyContent: 'center' },

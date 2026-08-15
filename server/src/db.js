@@ -67,6 +67,17 @@ function createDb() {
       content TEXT NOT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS favorites (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      drink_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      name_en TEXT,
+      image TEXT,
+      data TEXT NOT NULL DEFAULT '{}',
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(user_id, drink_id)
+    );
   `);
 
   // 迁移：允许 mood 为 NULL（支持「只记便签、不填心情」）

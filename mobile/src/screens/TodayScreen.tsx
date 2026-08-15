@@ -17,7 +17,7 @@ export default function TodayScreen() {
   const [pickerVisible, setPickerVisible] = useState(false);
   const promptedRef = useRef(false);
   const [rec, setRec] = useState<Drink[]>([]);
-  const [recIndex, setRecIndex] = useState(0);
+  const [batch, setBatch] = useState(0);
   const [recLoading, setRecLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Drink[] | null>(null);
@@ -32,12 +32,11 @@ export default function TodayScreen() {
     setMoodLoaded(true);
   }, [user]);
 
-  const loadRec = useCallback(async (mood?: string | null) => {
+  const loadRec = useCallback(async (mood?: string | null, b = 0) => {
     setRecLoading(true);
     try {
-      const list: any = await api.drinks(mood ? { mood, limit: 3 } : { limit: 3 });
+      const list: any = await api.recommend(mood || null, b);
       setRec(list);
-      setRecIndex(0);
     } catch (e: any) { setError(e.message || '加载推荐失败'); }
     setRecLoading(false);
   }, []);
@@ -52,9 +51,9 @@ export default function TodayScreen() {
   }, [moodLoaded, todayMood, user]);
 
   useEffect(() => {
-    if (user) loadRec(todayMood ? todayMood.mood : null);
+    if (user) loadRec(todayMood ? todayMood.mood : null, batch);
     else setRec([]);
-  }, [todayMood, user, loadRec]);
+  }, [todayMood, user, loadRec, batch]);
 
   const onSelectMood = async (slug: string, note?: string) => {
     setPickerVisible(false);
@@ -118,12 +117,14 @@ export default function TodayScreen() {
             <ActivityIndicator color={theme.colors.primary} style={{ marginVertical: spacing(4) }} />
           ) : rec.length > 0 ? (
             <View>
-              <DrinkCard drink={rec[recIndex]} onPress={() => navigation.navigate('DrinkDetail', { id: rec[recIndex].id })} />
-              {rec.length > 1 ? (
-                <TouchableOpacity onPress={() => setRecIndex((recIndex + 1) % rec.length)}>
-                  <Text style={styles.swap}>换一款 →</Text>
-                </TouchableOpacity>
-              ) : null}
+              {rec.map((d) => (
+                <View key={d.id} style={{ marginBottom: spacing(3) }}>
+                  <DrinkCard drink={d} onPress={() => navigation.navigate('DrinkDetail', { id: d.id, drink: d })} />
+                </View>
+              ))}
+              <TouchableOpacity onPress={() => setBatch((b) => b + 1)}>
+                <Text style={styles.swap}>换一批 →</Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <Text style={styles.empty}>暂无推荐</Text>

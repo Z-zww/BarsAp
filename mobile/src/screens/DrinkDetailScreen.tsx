@@ -5,12 +5,15 @@ import { api, resolveImg } from '../api';
 import { Drink } from '../types';
 import { MOOD_MAP } from '../moods';
 import { theme, spacing } from '../theme';
+import { useAuth } from '../AuthContext';
 
 export default function DrinkDetailScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  const { user } = useAuth();
   const [drink, setDrink] = useState<Drink | null>(null);
   const [error, setError] = useState('');
+  const [favorited, setFavorited] = useState(false);
 
   useEffect(() => {
     if (route.params.drink) { setDrink(route.params.drink); return; }
@@ -21,6 +24,19 @@ export default function DrinkDetailScreen() {
   }, [route.params.id, route.params.drink]);
 
   useLayoutEffect(() => { if (drink) navigation.setOptions({ title: drink.name }); }, [drink, navigation]);
+
+  useEffect(() => {
+    if (!user || !drink) { setFavorited(false); return; }
+    api.favorites().then((list: any) => setFavorited((list || []).some((d: any) => d.id === drink.id))).catch(() => {});
+  }, [user, drink]);
+
+  const toggleFav = async () => {
+    if (!user || !drink) return;
+    try {
+      const r: any = await api.toggleFavorite(drink);
+      setFavorited(r.favorited);
+    } catch (e) {}
+  };
 
   if (error) return <View style={styles.center}><Text style={styles.error}>{error}</Text></View>;
   if (!drink) return <View style={styles.center}><ActivityIndicator color={theme.colors.primary} /></View>;
@@ -43,6 +59,12 @@ export default function DrinkDetailScreen() {
         </View>
       ) : null}
       {drink.summary ? <Text style={styles.summary}>{drink.summary}</Text> : null}
+
+      {user ? (
+        <TouchableOpacity style={[styles.favBtn, favorited && styles.favBtnActive]} onPress={toggleFav}>
+          <Text style={styles.favText}>{favorited ? '❤️ 已收藏到我的酒库' : '🤍 收藏到我的酒库'}</Text>
+        </TouchableOpacity>
+      ) : null}
 
       {drink.history ? (
         <>
@@ -97,6 +119,9 @@ const styles = StyleSheet.create({
   moods: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing(1), marginTop: spacing(3) },
   moodTag: { fontSize: 13, color: theme.colors.primaryDark, backgroundColor: '#F6E9E1', paddingHorizontal: spacing(2), paddingVertical: 3, borderRadius: 999 },
   summary: { fontSize: 15, color: theme.colors.text, marginTop: spacing(3), lineHeight: 22 },
+  favBtn: { marginTop: spacing(4), borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.card },
+  favBtnActive: { borderColor: theme.colors.like, backgroundColor: '#FBE9E9' },
+  favText: { fontSize: 15, fontWeight: '700', color: theme.colors.text },
   section: { fontSize: 18, fontWeight: '700', color: theme.colors.text, marginTop: spacing(6), marginBottom: spacing(2) },
   para: { fontSize: 15, color: theme.colors.text, lineHeight: 24 },
   item: { fontSize: 15, color: theme.colors.text, lineHeight: 26 },

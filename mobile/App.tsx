@@ -14,12 +14,14 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import DrinkDetailScreen from './src/screens/DrinkDetailScreen';
 import PostDetailScreen from './src/screens/PostDetailScreen';
 import CreatePostScreen from './src/screens/CreatePostScreen';
+import MyLibraryScreen from './src/screens/MyLibraryScreen';
 
 export type RootStackParamList = {
   Tabs: undefined;
   DrinkDetail: { id: string; drink?: any };
   PostDetail: { id: number };
   CreatePost: undefined;
+  MyLibrary: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -74,6 +76,7 @@ export default function App() {
           <Stack.Screen name="DrinkDetail" component={DrinkDetailScreen} options={{ title: '酒品详情' }} />
           <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: '帖子' }} />
           <Stack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: '发布配方' }} />
+          <Stack.Screen name="MyLibrary" component={MyLibraryScreen} options={{ title: '我的酒库' }} />
         </Stack.Navigator>
           </NavigationContainer>
         </AuthProvider>

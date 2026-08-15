@@ -21,6 +21,7 @@ export default function CalendarScreen() {
   const [moodMap, setMoodMap] = useState<Record<string, MoodRecord>>({});
   const [editing, setEditing] = useState<{ date: string; record: MoodRecord | null } | null>(null);
   const [accent, setAccent] = useState(theme.colors.primary);
+  const [recipeDays, setRecipeDays] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     AsyncStorage.getItem(ACCENT_KEY).then((v) => { if (v) setAccent(v); });
@@ -29,12 +30,19 @@ export default function CalendarScreen() {
   const pickAccent = (c: string) => { setAccent(c); AsyncStorage.setItem(ACCENT_KEY, c); };
 
   const load = useCallback(async () => {
-    if (!user) { setMoodMap({}); return; }
+    if (!user) { setMoodMap({}); setRecipeDays({}); return; }
     try {
       const list: any = await api.moods(monthStr(cursor));
       const map: Record<string, MoodRecord> = {};
       for (const m of list) map[m.date] = m;
       setMoodMap(map);
+      const posts: any = await api.myPosts();
+      const rd: Record<string, boolean> = {};
+      for (const p of (posts || [])) {
+        const d = (p.created_at || '').slice(0, 10);
+        if (d) rd[d] = true;
+      }
+      setRecipeDays(rd);
     } catch (e) {}
   }, [user, cursor]);
 
@@ -104,6 +112,7 @@ export default function CalendarScreen() {
                     <Text style={[styles.dayNum, isToday && styles.todayText, (wd === 0 || wd === 6) && !isToday && styles.weekend]}>{day}</Text>
                     {hasMood ? <Text style={styles.dayEmoji}>{rec!.emoji}</Text> : hasNote ? <Text style={styles.dayEmoji}>📝</Text> : <Text style={styles.dayEmpty}> </Text>}
                     {hasMood && hasNote ? <View style={[styles.noteDot, { backgroundColor: isToday ? '#fff' : accent }]} /> : null}
+                    {recipeDays[date] ? <Text style={styles.recipeDot}>🍹</Text> : null}
                   </View>
                 </TouchableOpacity>
               );
@@ -163,6 +172,7 @@ const styles = StyleSheet.create({
   dayEmoji: { fontSize: 15, marginTop: 1 },
   dayEmpty: { fontSize: 15, opacity: 0 },
   noteDot: { width: 5, height: 5, borderRadius: 3, marginTop: 2 },
+  recipeDot: { fontSize: 9, lineHeight: 11 },
   recordBtn: { borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', marginTop: spacing(5) },
   recordBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   tip: { fontSize: 12, color: theme.colors.muted, textAlign: 'center', marginTop: spacing(2) },
