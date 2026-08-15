@@ -12,6 +12,10 @@
     },
     "android": {
       "package": "com.viaoff.drinker",
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#F5EFE6",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -24,7 +28,15 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "extra": {
       "apiUrl": "http://192.168.3.79:4000",
