@@ -1,0 +1,735 @@
+[
+  {
+    "id": "old-fashioned",
+    "name": "古典鸡尾酒",
+    "nameEn": "Old Fashioned",
+    "category": "经典",
+    "moods": [
+      "calm",
+      "lonely"
+    ],
+    "image": "/img/old-fashioned.png",
+    "summary": "威士忌、方糖与苦精的经典组合",
+    "history": "古典鸡尾酒可追溯到 19 世纪初，是「鸡尾酒」一词最早的形态之一——烈酒、糖、水与苦精的简单组合。名字来源于 19 世纪末，酒客向酒保点「老式做法」（old fashioned）的威士忌鸡尾酒，以区别于当时花哨的新式调法。它历经禁酒令而存续，至今仍是全球酒吧的基石。",
+    "ingredients": [
+      {
+        "name": "波本/黑麦威士忌",
+        "amount": "60ml"
+      },
+      {
+        "name": "方糖",
+        "amount": "1 块"
+      },
+      {
+        "name": "安哥斯图拉苦精",
+        "amount": "2-3 滴"
+      },
+      {
+        "name": "橙皮",
+        "amount": "1 片"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "杯中放入方糖，滴上苦精与少量水，捣溶",
+      "加入威士忌与冰块，搅拌约 30 秒",
+      "橙皮拧出精油抹在杯沿，再放入杯中"
+    ],
+    "videos": [
+      {
+        "title": "Old Fashioned 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=old+fashioned+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "威士忌",
+      "经典",
+      "烈酒"
+    ]
+  },
+  {
+    "id": "margarita",
+    "name": "玛格丽特",
+    "nameEn": "Margarita",
+    "category": "清爽",
+    "moods": [
+      "happy",
+      "excited"
+    ],
+    "image": "/img/margarita.png",
+    "summary": "龙舌兰、君度与青柠的酸甜清爽",
+    "history": "玛格丽特是龙舌兰基酒的标志性鸡尾酒，起源众说纷纭，流传最广的说法是 1940 年代墨西哥蒂华纳的一位酒保为一位名为玛格丽特的女士调制。也有说法称它是「龙舌兰酸」（Tequila Sour）的变体。盐边是其标志，恰到好处地平衡了酸甜与酒香。",
+    "ingredients": [
+      {
+        "name": "龙舌兰酒",
+        "amount": "50ml"
+      },
+      {
+        "name": "君度橙酒",
+        "amount": "25ml"
+      },
+      {
+        "name": "青柠汁",
+        "amount": "25ml"
+      },
+      {
+        "name": "盐",
+        "amount": "适量"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "杯口用青柠擦拭后蘸盐，做一圈盐边",
+      "所有材料加冰摇匀",
+      "滤入杯中即可"
+    ],
+    "videos": [
+      {
+        "title": "Margarita 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=margarita+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "龙舌兰",
+      "清爽",
+      "酸甜"
+    ]
+  },
+  {
+    "id": "mojito",
+    "name": "莫吉托",
+    "nameEn": "Mojito",
+    "category": "清爽",
+    "moods": [
+      "happy",
+      "excited"
+    ],
+    "image": "/img/mojito.png",
+    "summary": "朗姆、薄荷与青柠的夏日清爽",
+    "history": "莫吉托起源于古巴哈瓦那，前身可追溯到 16 世纪的「德拉盖」（El Draque）。它在 20 世纪因作家海明威的钟爱而闻名于世，是朗姆酒与薄荷、青柠、苏打水的清新组合，成为古巴与热带风情的代表。",
+    "ingredients": [
+      {
+        "name": "白朗姆酒",
+        "amount": "50ml"
+      },
+      {
+        "name": "薄荷叶",
+        "amount": "8-10 片"
+      },
+      {
+        "name": "青柠",
+        "amount": "半个"
+      },
+      {
+        "name": "白糖",
+        "amount": "2 茶匙"
+      },
+      {
+        "name": "苏打水",
+        "amount": "适量"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "杯中放入薄荷、糖与青柠块，轻轻捣压",
+      "加冰块与朗姆酒，搅匀",
+      "补满苏打水，轻提薄荷即可"
+    ],
+    "videos": [
+      {
+        "title": "Mojito 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=mojito+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "朗姆",
+      "清爽",
+      "薄荷"
+    ]
+  },
+  {
+    "id": "cosmopolitan",
+    "name": "大都会",
+    "nameEn": "Cosmopolitan",
+    "category": "香甜",
+    "moods": [
+      "happy",
+      "excited"
+    ],
+    "image": "/img/cosmopolitan.png",
+    "summary": "伏特加、蔓越莓与青柠的粉红酸甜",
+    "history": "大都会在 1980-90 年代流行起来，被视为伏特加基酒「马提尼家族」的现代成员。它以伏特加、君度、蔓越莓汁与青柠汁调制，酸甜平衡、色泽粉红，因美剧《欲望都市》而风靡全球。",
+    "ingredients": [
+      {
+        "name": "伏特加",
+        "amount": "40ml"
+      },
+      {
+        "name": "君度橙酒",
+        "amount": "15ml"
+      },
+      {
+        "name": "蔓越莓汁",
+        "amount": "30ml"
+      },
+      {
+        "name": "青柠汁",
+        "amount": "15ml"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "所有材料加冰摇匀",
+      "滤入冰镇的马提尼杯",
+      "用青柠皮或柠檬皮装饰"
+    ],
+    "videos": [
+      {
+        "title": "Cosmopolitan 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=cosmopolitan+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "伏特加",
+      "香甜",
+      "粉红"
+    ]
+  },
+  {
+    "id": "negroni",
+    "name": "尼格罗尼",
+    "nameEn": "Negroni",
+    "category": "经典",
+    "moods": [
+      "calm",
+      "angry"
+    ],
+    "image": "/img/negroni.png",
+    "summary": "金酒、金巴利与味美思的苦甜经典",
+    "history": "尼格罗尼诞生于 1919 年左右的意大利佛罗伦萨，据传是卡米洛·尼格罗尼伯爵要求把 Americano 中的苏打水换成金酒而来。金酒、金巴利与甜味美思等比例调制，苦甜交织，是意式开胃酒的代表。",
+    "ingredients": [
+      {
+        "name": "金酒",
+        "amount": "30ml"
+      },
+      {
+        "name": "金巴利",
+        "amount": "30ml"
+      },
+      {
+        "name": "甜味美思",
+        "amount": "30ml"
+      },
+      {
+        "name": "橙皮",
+        "amount": "1 片"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "古典杯中加满冰块",
+      "倒入三种酒各 30ml，搅拌均匀",
+      "放入橙皮装饰"
+    ],
+    "videos": [
+      {
+        "title": "Negroni 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=negroni+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "金酒",
+      "苦甜",
+      "开胃酒"
+    ]
+  },
+  {
+    "id": "espresso-martini",
+    "name": "浓缩咖啡马提尼",
+    "nameEn": "Espresso Martini",
+    "category": "浓郁",
+    "moods": [
+      "tired"
+    ],
+    "image": "/img/espresso-martini.png",
+    "summary": "伏特加与浓缩咖啡的提神之选",
+    "history": "浓缩咖啡马提尼由伦敦调酒师迪克·布拉德塞尔于 1980 年代发明，据说应一位模特「先让我清醒，再让我醉」的要求而创。伏特加、浓缩咖啡与咖啡利口酒摇出绵密泡沫，兼具提神与微醺。",
+    "ingredients": [
+      {
+        "name": "伏特加",
+        "amount": "50ml"
+      },
+      {
+        "name": "咖啡利口酒",
+        "amount": "25ml"
+      },
+      {
+        "name": "浓缩咖啡",
+        "amount": "30ml"
+      },
+      {
+        "name": "糖浆",
+        "amount": "10ml（可选）"
+      },
+      {
+        "name": "咖啡豆",
+        "amount": "3 颗"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "所有液体材料加冰用力摇匀",
+      "滤入马提尼杯",
+      "表面放三颗咖啡豆装饰"
+    ],
+    "videos": [
+      {
+        "title": "Espresso Martini 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=espresso+martini+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "伏特加",
+      "咖啡",
+      "提神"
+    ]
+  },
+  {
+    "id": "pina-colada",
+    "name": "椰林飘香",
+    "nameEn": "Piña Colada",
+    "category": "香甜",
+    "moods": [
+      "happy",
+      "excited"
+    ],
+    "image": "/img/pina-colada.png",
+    "summary": "朗姆、椰浆与菠萝的热带甜美",
+    "history": "椰林飘香诞生于波多黎各，1954 年由圣胡安卡里贝希尔顿酒店的酒保拉蒙·马雷罗创作，名字意为「压碎的菠萝」。朗姆、椰浆与菠萝汁的组合后来成为波多黎各的国饮，是热带度假的象征。",
+    "ingredients": [
+      {
+        "name": "白朗姆酒",
+        "amount": "50ml"
+      },
+      {
+        "name": "椰浆",
+        "amount": "30ml"
+      },
+      {
+        "name": "菠萝汁",
+        "amount": "90ml"
+      },
+      {
+        "name": "菠萝角",
+        "amount": "装饰"
+      },
+      {
+        "name": "樱桃",
+        "amount": "装饰"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "所有材料加冰用搅拌机打成冰沙（或加冰摇匀）",
+      "倒入飓风杯或大杯中",
+      "用菠萝角与樱桃装饰"
+    ],
+    "videos": [
+      {
+        "title": "Piña Colada 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=pina+colada+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "朗姆",
+      "热带",
+      "甜美"
+    ]
+  },
+  {
+    "id": "gin-tonic",
+    "name": "金汤力",
+    "nameEn": "Gin & Tonic",
+    "category": "清爽",
+    "moods": [
+      "calm",
+      "tired"
+    ],
+    "image": "/img/gin-tonic.png",
+    "summary": "金酒与汤力水的清爽苦甜",
+    "history": "金汤力起源于 19 世纪英属印度，为对抗疟疾，英军服用含奎宁的汤力水，因味苦而加入金酒与青柠。由此诞生了这款清爽微苦、气泡感十足的长饮，至今风靡全球。",
+    "ingredients": [
+      {
+        "name": "金酒",
+        "amount": "50ml"
+      },
+      {
+        "name": "汤力水",
+        "amount": "适量"
+      },
+      {
+        "name": "青柠角",
+        "amount": "1-2 块"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "高球杯中加满冰块",
+      "倒入金酒",
+      "补满汤力水，挤入青柠角并放入杯中"
+    ],
+    "videos": [
+      {
+        "title": "Gin & Tonic 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=gin+and+tonic+recipe"
+      }
+    ],
+    "tags": [
+      "金酒",
+      "气泡",
+      "清爽"
+    ]
+  },
+  {
+    "id": "hot-toddy",
+    "name": "热托迪",
+    "nameEn": "Hot Toddy",
+    "category": "热饮",
+    "moods": [
+      "sad",
+      "tired",
+      "lonely"
+    ],
+    "image": "/img/hot-toddy.png",
+    "summary": "威士忌、蜂蜜与柠檬的暖心热饮",
+    "history": "热托迪是历史悠久的冬日暖饮，起源常被追溯到 18 世纪的苏格兰或爱尔兰，被视为治疗感冒与驱寒的民间良方。威士忌、热水、蜂蜜与柠檬的组合温暖柔和，在寒冷或低落时尤其抚慰人心。",
+    "ingredients": [
+      {
+        "name": "威士忌",
+        "amount": "50ml"
+      },
+      {
+        "name": "蜂蜜",
+        "amount": "1-2 茶匙"
+      },
+      {
+        "name": "柠檬汁",
+        "amount": "15ml"
+      },
+      {
+        "name": "热水",
+        "amount": "适量"
+      },
+      {
+        "name": "柠檬片/丁香",
+        "amount": "装饰"
+      }
+    ],
+    "steps": [
+      "杯中放入蜂蜜与柠檬汁",
+      "倒入威士忌",
+      "注入热水搅匀，放柠檬片（可插丁香）装饰"
+    ],
+    "videos": [
+      {
+        "title": "Hot Toddy 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=hot+toddy+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "威士忌",
+      "热饮",
+      "治愈"
+    ]
+  },
+  {
+    "id": "daiquiri",
+    "name": "代基里",
+    "nameEn": "Daiquiri",
+    "category": "清爽",
+    "moods": [
+      "happy",
+      "excited"
+    ],
+    "image": "/img/daiquiri.png",
+    "summary": "朗姆、青柠与糖的极简酸甜",
+    "history": "代基里诞生于 19 世纪末的古巴，名字来自圣地亚哥附近的代基里矿区，最初是矿工与工程师用当地朗姆、青柠与糖调制的饮品。海明威对其情有独钟，使其成为经典的三元素鸡尾酒典范。",
+    "ingredients": [
+      {
+        "name": "白朗姆酒",
+        "amount": "60ml"
+      },
+      {
+        "name": "青柠汁",
+        "amount": "20ml"
+      },
+      {
+        "name": "糖浆",
+        "amount": "15ml"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "所有材料加冰摇匀",
+      "滤入冰镇的马提尼杯即可"
+    ],
+    "videos": [
+      {
+        "title": "Daiquiri 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=daiquiri+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "朗姆",
+      "酸甜",
+      "经典"
+    ]
+  },
+  {
+    "id": "whisky-sour",
+    "name": "威士忌酸",
+    "nameEn": "Whiskey Sour",
+    "category": "经典",
+    "moods": [
+      "calm",
+      "sad"
+    ],
+    "image": "/img/whisky-sour.png",
+    "summary": "威士忌、柠檬与糖的酸香平衡",
+    "history": "威士忌酸是「酸酒家族」（Sour）最著名的成员，19 世纪中叶即见于调酒文献。威士忌、柠檬汁与糖（常加蛋清使口感绵密）构成酸甜平衡的经典结构，历经百年仍是酒吧常青款。",
+    "ingredients": [
+      {
+        "name": "波本威士忌",
+        "amount": "50ml"
+      },
+      {
+        "name": "柠檬汁",
+        "amount": "25ml"
+      },
+      {
+        "name": "糖浆",
+        "amount": "15ml"
+      },
+      {
+        "name": "蛋清",
+        "amount": "15ml（可选）"
+      },
+      {
+        "name": "苦精",
+        "amount": "2 滴（可选）"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "材料加冰用力摇匀（加蛋清先干摇再冰摇）",
+      "滤入古典杯加冰",
+      "滴苦精或柠檬片装饰"
+    ],
+    "videos": [
+      {
+        "title": "Whiskey Sour 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=whiskey+sour+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "威士忌",
+      "酸甜",
+      "经典"
+    ]
+  },
+  {
+    "id": "aperol-spritz",
+    "name": "阿佩罗橙光",
+    "nameEn": "Aperol Spritz",
+    "category": "清爽",
+    "moods": [
+      "happy",
+      "calm"
+    ],
+    "image": "/img/aperol-spritz.png",
+    "summary": "阿佩罗、普罗塞克与苏打的橙色气泡",
+    "history": "阿佩罗橙光源自意大利北部的「Spritz」传统，即在白葡萄酒中兑水。20 世纪以来演变为阿佩罗、普罗塞克起泡酒与苏打水的组合，色泽橙红、气泡轻盈，成为意大利乃至全球最流行的开胃酒之一。",
+    "ingredients": [
+      {
+        "name": "阿佩罗",
+        "amount": "60ml"
+      },
+      {
+        "name": "普罗塞克起泡酒",
+        "amount": "90ml"
+      },
+      {
+        "name": "苏打水",
+        "amount": "30ml"
+      },
+      {
+        "name": "橙片",
+        "amount": "装饰"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "大酒杯中加满冰块",
+      "倒入普罗塞克、阿佩罗与苏打水，轻搅",
+      "放橙片装饰"
+    ],
+    "videos": [
+      {
+        "title": "Aperol Spritz 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=aperol+spritz+recipe"
+      }
+    ],
+    "tags": [
+      "开胃酒",
+      "气泡",
+      "橙味"
+    ]
+  },
+  {
+    "id": "bloody-mary",
+    "name": "血腥玛丽",
+    "nameEn": "Bloody Mary",
+    "category": "浓郁",
+    "moods": [
+      "tired",
+      "angry"
+    ],
+    "image": "/img/bloody-mary.png",
+    "summary": "伏特加、番茄汁与香料的咸鲜",
+    "history": "血腥玛丽诞生于 1920 年代的巴黎，由酒保费尔南·帕蒂奥在哈利纽约酒吧创作，以番茄汁与伏特加为基础，加入多种香料。名字传说取自英格兰女王玛丽一世，如今是全球知名的「醒酒」咸鲜鸡尾酒。",
+    "ingredients": [
+      {
+        "name": "伏特加",
+        "amount": "50ml"
+      },
+      {
+        "name": "番茄汁",
+        "amount": "120ml"
+      },
+      {
+        "name": "柠檬汁",
+        "amount": "15ml"
+      },
+      {
+        "name": "伍斯特酱",
+        "amount": "3 滴"
+      },
+      {
+        "name": "辣椒酱",
+        "amount": "2 滴"
+      },
+      {
+        "name": "盐与黑胡椒",
+        "amount": "少许"
+      },
+      {
+        "name": "芹菜杆",
+        "amount": "装饰"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "除冰块外所有材料加冰摇匀或搅匀",
+      "滤入加冰的高球杯",
+      "用芹菜杆与柠檬角装饰"
+    ],
+    "videos": [
+      {
+        "title": "Bloody Mary 调酒教程",
+        "url": "https://www.youtube.com/results?search_query=bloody+mary+cocktail+recipe"
+      }
+    ],
+    "tags": [
+      "伏特加",
+      "咸鲜",
+      "番茄"
+    ]
+  },
+  {
+    "id": "virgin-mojito",
+    "name": "无酒精莫吉托",
+    "nameEn": "Virgin Mojito",
+    "category": "无酒精",
+    "moods": [
+      "calm",
+      "anxious"
+    ],
+    "image": "/img/virgin-mojito.png",
+    "summary": "无酒精版莫吉托，薄荷青柠气泡饮",
+    "history": "无酒精莫吉托是经典莫吉托的去酒精版本，保留薄荷、青柠与苏打水的清新风味，以糖浆与苏打水替代朗姆酒。它让不饮酒或想保持清醒的人也能享受清爽气泡与草本香气，是酒吧常见的「Mocktail」代表。",
+    "ingredients": [
+      {
+        "name": "薄荷叶",
+        "amount": "8-10 片"
+      },
+      {
+        "name": "青柠",
+        "amount": "半个"
+      },
+      {
+        "name": "糖浆",
+        "amount": "20ml"
+      },
+      {
+        "name": "苏打水",
+        "amount": "适量"
+      },
+      {
+        "name": "冰块",
+        "amount": "适量"
+      }
+    ],
+    "steps": [
+      "杯中放入薄荷、青柠块与糖浆，轻轻捣压",
+      "加满冰块",
+      "补满苏打水，轻搅即可"
+    ],
+    "videos": [
+      {
+        "title": "Virgin Mojito 教程",
+        "url": "https://www.youtube.com/results?search_query=virgin+mojito+mocktail+recipe"
+      }
+    ],
+    "tags": [
+      "无酒精",
+      "清爽",
+      "薄荷"
+    ]
+  }
+]

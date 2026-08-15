@@ -1,0 +1,15 @@
+{
+  "name": "drinker-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Drinker 后端 API：心情打卡、按心情推荐酒品、社区配方",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}

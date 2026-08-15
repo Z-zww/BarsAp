@@ -1,0 +1,24 @@
+# Node
+node_modules/
+
+# 后端运行时数据库（源数据 drinks.json 需提交）
+server/data/*.db
+server/data/*.db-wal
+server/data/*.db-shm
+
+# 环境变量
+.env
+.env.local
+
+# Expo / 移动端构建产物
+.expo/
+mobile/dist/
+mobile/web-build/
+mobile/expo-env.d.ts
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 本机 SSH 私钥（用于推送，勿提交）
+.ssh/
