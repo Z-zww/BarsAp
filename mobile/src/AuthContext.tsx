@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { api, loadToken, saveToken } from './api';
+import { api, loadToken, saveToken, loadApiBase } from './api';
 import { User } from './types';
 
 interface AuthContextValue {
@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
+      await loadApiBase();
       const t = await loadToken();
       if (t) {
         try {

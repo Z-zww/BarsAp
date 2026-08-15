@@ -11,6 +11,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.viaoff.drinker",
       "adaptiveIcon": {
         "backgroundColor": "#F5EFE6",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -24,6 +25,13 @@
     },
     "plugins": [
       "expo-web-browser"
-    ]
+    ],
+    "extra": {
+      "apiUrl": "http://192.168.3.79:4000",
+      "eas": {
+        "projectId": "001fb06d-c247-4d1d-9909-0c07b3cea9af"
+      }
+    },
+    "owner": "viaoff"
   }
 }

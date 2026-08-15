@@ -12,12 +12,34 @@ function resolveBase(): string {
   return 'http://' + (host || 'localhost') + ':4000';
 }
 
-export const API_BASE = resolveBase();
+let customBase: string | null = null;
+
+const API_BASE_KEY = 'drinker_api_url';
+
+export function getBase(): string {
+  return customBase || resolveBase();
+}
+
+export async function loadApiBase(): Promise<string> {
+  const v = await AsyncStorage.getItem(API_BASE_KEY);
+  customBase = v || null;
+  return getBase();
+}
+
+export async function setApiBase(url: string): Promise<string> {
+  let u = (url || '').trim();
+  if (u && !u.startsWith('http://') && !u.startsWith('https://')) u = 'http://' + u;
+  while (u.endsWith('/')) u = u.slice(0, -1);
+  customBase = u || null;
+  if (u) await AsyncStorage.setItem(API_BASE_KEY, u);
+  else await AsyncStorage.removeItem(API_BASE_KEY);
+  return getBase();
+}
 
 export function resolveImg(url: string | null | undefined): string | null {
   if (!url) return null;
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  return API_BASE + url;
+  return getBase() + url;
 }
 
 let token: string | null = null;
@@ -42,13 +64,13 @@ async function request<T = any>(method: string, path: string, body?: unknown): P
   if (token) headers.Authorization = 'Bearer ' + token;
   let res: any;
   try {
-    res = await fetch(API_BASE + path, {
+    res = await fetch(getBase() + path, {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch (e) {
-    throw new ApiError('无法连接服务器，请确认后端已启动（' + API_BASE + '）');
+    throw new ApiError('无法连接服务器，请确认后端已启动（' + getBase() + '）');
   }
   let data: any = null;
   try { data = await res.json(); } catch (e) {}
