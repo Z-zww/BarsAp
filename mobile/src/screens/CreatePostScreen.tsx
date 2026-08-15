@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { api } from '../api';
+import { encryptText, encryptList } from '../crypto';
 import { theme, spacing } from '../theme';
 
 export default function CreatePostScreen() {
@@ -29,7 +30,7 @@ export default function CreatePostScreen() {
     setSubmitting(true);
     setError('');
     try {
-      await api.createPost({ title: title.trim(), ingredients: ings, steps: stps, image: image.trim() || undefined });
+      await api.createPost({ title: encryptText(title.trim()), ingredients: encryptList(ings), steps: encryptList(stps), image: image.trim() || undefined });
       navigation.goBack();
     } catch (e: any) { setError(e.message || '发布失败'); }
     setSubmitting(false);

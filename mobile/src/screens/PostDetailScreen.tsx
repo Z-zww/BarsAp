@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, StyleSheet,
 import { useRoute } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 import { api, resolveImg } from '../api';
+import { encryptText } from '../crypto';
 import { Post, CommentItem } from '../types';
 import { theme, spacing } from '../theme';
 
@@ -33,7 +34,7 @@ export default function PostDetailScreen() {
   const submitComment = async () => {
     if (!user || !comment.trim()) return;
     setBusy(true);
-    try { await api.comment(route.params.id, comment.trim()); setComment(''); await load(); } catch (e) {}
+    try { await api.comment(route.params.id, encryptText(comment.trim())); setComment(''); await load(); } catch (e) {}
     setBusy(false);
   };
 

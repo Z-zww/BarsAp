@@ -10,6 +10,7 @@
     "@react-navigation/bottom-tabs": "^7.18.16",
     "@react-navigation/native": "^7.3.16",
     "@react-navigation/native-stack": "^7.18.8",
+    "crypto-js": "^4.2.0",
     "expo": "~57.0.13",
     "expo-build-properties": "~57.0.11",
     "expo-constants": "~57.0.11",
@@ -23,6 +24,7 @@
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/react": "~19.2.2",
     "typescript": "~6.0.3"
   },

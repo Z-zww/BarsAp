@@ -59,19 +59,29 @@ export async function saveToken(t: string | null) {
 
 export class ApiError extends Error {}
 
-async function request<T = any>(method: string, path: string, body?: unknown): Promise<T> {
+// 网络请求：15 秒超时 + 网络错误自动重试 2 次（适配不稳定网络环境）
+async function request<T = any>(method: string, path: string, body?: unknown, attempt = 0): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = 'Bearer ' + token;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
   let res: any;
   try {
     res = await fetch(getBase() + path, {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
+      signal: controller.signal,
     });
   } catch (e) {
+    clearTimeout(timer);
+    if (attempt < 2) {
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+      return request<T>(method, path, body, attempt + 1);
+    }
     throw new ApiError('无法连接服务器，请确认后端已启动（' + getBase() + '）');
   }
+  clearTimeout(timer);
   let data: any = null;
   try { data = await res.json(); } catch (e) {}
   if (!res.ok) throw new ApiError((data && data.error) || ('HTTP ' + res.status));

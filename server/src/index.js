@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const https = require('https');
+const { decryptText } = require('./crypto');
 const { createDb } = require('./db');
 const { hashPassword, verifyPassword, newToken, requireAuth, optionalAuth } = require('./auth');
 const { MOODS, MOOD_MAP } = require('./moods-meta');
@@ -203,13 +204,14 @@ app.get('/api/posts', optionalAuth(db), (req, res) => {
 
 app.post('/api/posts', requireAuth(db), (req, res) => {
   const { title, ingredients, steps, image } = req.body || {};
-  if (typeof title !== 'string' || title.trim().length === 0 || title.length > 100)
+  const decTitle = decryptText(title);
+  if (typeof decTitle !== 'string' || decTitle.trim().length === 0 || decTitle.length > 100)
     return res.status(400).json({ error: '标题不能为空且不超过 100 字' });
-  const ings = Array.isArray(ingredients) ? ingredients.map(String) : [];
-  const stps = Array.isArray(steps) ? steps.map(String) : [];
+  const ings = Array.isArray(ingredients) ? ingredients.map((x) => decryptText(String(x))) : [];
+  const stps = Array.isArray(steps) ? steps.map((x) => decryptText(String(x))) : [];
   if (stps.length === 0) return res.status(400).json({ error: '至少写一个步骤' });
   const info = db.prepare('INSERT INTO posts (user_id, title, ingredients, steps, image) VALUES (?, ?, ?, ?, ?)')
-    .run(req.user.id, title.trim(), JSON.stringify(ings), JSON.stringify(stps), image || null);
+    .run(req.user.id, decTitle.trim(), JSON.stringify(ings), JSON.stringify(stps), image || null);
   res.status(201).json({ id: Number(info.lastInsertRowid) });
 });
 
@@ -233,7 +235,7 @@ app.post('/api/posts/:id/like', requireAuth(db), (req, res) => {
 app.post('/api/posts/:id/comments', requireAuth(db), (req, res) => {
   const post = db.prepare('SELECT id FROM posts WHERE id = ?').get(req.params.id);
   if (!post) return res.status(404).json({ error: '帖子不存在' });
-  const content = ((req.body || {}).content || '').trim();
+  const content = decryptText(((req.body || {}).content || '').trim());
   if (!content || content.length > 500) return res.status(400).json({ error: '评论内容 1-500 字' });
   const info = db.prepare('INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)').run(post.id, req.user.id, content);
   res.status(201).json({ id: Number(info.lastInsertRowid), username: req.user.username, content, created_at: new Date().toISOString() });
