@@ -5,6 +5,7 @@
   "version": "57.0.15",
   "main": "index.ts",
   "dependencies": {
+    "@expo/metro-runtime": "~57.0.10",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.18.16",
     "@react-navigation/native": "^7.3.16",
