@@ -1,8 +1,11 @@
+try { require('dotenv').config(); } catch (e) {}
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const https = require('https');
 const { decryptText } = require('./crypto');
+const { zhToEn, enToZhBatch, hasChinese } = require('./translate');
+const { beijingDate, beijingNow } = require('./time');
 const { createDb } = require('./db');
 const { hashPassword, verifyPassword, newToken, requireAuth, optionalAuth } = require('./auth');
 const { MOODS, MOOD_MAP } = require('./moods-meta');
@@ -119,8 +122,7 @@ app.get('/api/me', requireAuth(db), (req, res) => {
 app.get('/api/moods/meta', (req, res) => res.json(MOODS));
 
 app.get('/api/moods/today', requireAuth(db), (req, res) => {
-  const _d = new Date();
-  const today = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
+  const today = beijingDate();
   const row = db.prepare('SELECT date, mood, note FROM moods WHERE user_id = ? AND date = ?').get(req.user.id, today);
   res.json({ date: today, mood: row ? { date: row.date, mood: row.mood, note: row.note, emoji: MOOD_MAP[row.mood] ? MOOD_MAP[row.mood].emoji : '', label: MOOD_MAP[row.mood] ? MOOD_MAP[row.mood].label : '' } : null });
 });
@@ -169,18 +171,24 @@ app.get('/api/drinks', (req, res) => {
   res.json(rows.slice(0, limit));
 });
 
-// 网络酒库搜索（TheCocktailDB，600+ 款）
-app.get('/api/drinks/network', (req, res) => {
-  const q = (req.query.q || '').trim();
-  if (!q) return res.json([]);
+// 网络酒库搜索（TheCocktailDB，600+ 款，支持中英双语 + 中文名）
+app.get('/api/drinks/network', async (req, res) => {
+  const rawQ = (req.query.q || '').trim();
+  if (!rawQ) return res.json([]);
+  let q = rawQ;
+  if (hasChinese(q)) { try { q = await zhToEn(q); } catch (e) {} }
   const url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + encodeURIComponent(q);
-  https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (r) => {
+  https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, async (r) => {
     let data = '';
     r.on('data', (c) => data += c);
-    r.on('end', () => {
+    r.on('end', async () => {
       try {
         const j = JSON.parse(data);
-        res.json((j.drinks || []).map(mapNetworkDrink).filter(Boolean).slice(0, 20));
+        const drinks = (j.drinks || []).map(mapNetworkDrink).filter(Boolean).slice(0, 20);
+        const names = drinks.map((d) => d.nameEn || d.name);
+        const zh = await enToZhBatch(names);
+        for (let i = 0; i < drinks.length; i++) drinks[i].name = zh[i] || drinks[i].name;
+        res.json(drinks);
       } catch (e) { res.json([]); }
     });
   }).on('error', () => res.json([]));
@@ -210,8 +218,8 @@ app.post('/api/posts', requireAuth(db), (req, res) => {
   const ings = Array.isArray(ingredients) ? ingredients.map((x) => decryptText(String(x))) : [];
   const stps = Array.isArray(steps) ? steps.map((x) => decryptText(String(x))) : [];
   if (stps.length === 0) return res.status(400).json({ error: '至少写一个步骤' });
-  const info = db.prepare('INSERT INTO posts (user_id, title, ingredients, steps, image) VALUES (?, ?, ?, ?, ?)')
-    .run(req.user.id, decTitle.trim(), JSON.stringify(ings), JSON.stringify(stps), image || null);
+  const info = db.prepare('INSERT INTO posts (user_id, title, ingredients, steps, image, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(req.user.id, decTitle.trim(), JSON.stringify(ings), JSON.stringify(stps), image || null, beijingNow());
   res.status(201).json({ id: Number(info.lastInsertRowid) });
 });
 
@@ -237,8 +245,9 @@ app.post('/api/posts/:id/comments', requireAuth(db), (req, res) => {
   if (!post) return res.status(404).json({ error: '帖子不存在' });
   const content = decryptText(((req.body || {}).content || '').trim());
   if (!content || content.length > 500) return res.status(400).json({ error: '评论内容 1-500 字' });
-  const info = db.prepare('INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)').run(post.id, req.user.id, content);
-  res.status(201).json({ id: Number(info.lastInsertRowid), username: req.user.username, content, created_at: new Date().toISOString() });
+  const now = beijingNow();
+  const info = db.prepare('INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)').run(post.id, req.user.id, content, now);
+  res.status(201).json({ id: Number(info.lastInsertRowid), username: req.user.username, content, created_at: now });
 });
 
 app.delete('/api/posts/:id', requireAuth(db), (req, res) => {
