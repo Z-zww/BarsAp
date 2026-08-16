@@ -39,7 +39,7 @@
       ["expo-build-properties", { "android": { "usesCleartextTraffic": true } }]
     ],
     "extra": {
-      "apiUrl": "http://192.168.3.79:4000",
+      "apiUrl": "https://barsap.onrender.com",
       "eas": { "projectId": "001fb06d-c247-4d1d-9909-0c07b3cea9af" }
     },
     "owner": "viaoff"
