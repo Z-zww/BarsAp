@@ -1,4 +1,4 @@
-# Render Blueprint — Drinker 后端
+# Render Blueprint — Drinker 后端 + Web
 # 用法：Render 控制台 → New → Blueprint → 选择 Z-zww/BarsAp → Apply
 # 密钥类变量（sync: false）创建后在服务面板 Environment 标签里手动填写
 services:
@@ -23,3 +23,21 @@ services:
         sync: false
       - key: DASHSCOPE_API_KEY
         sync: false
+
+static_sites:
+  - type: web
+    name: drinker-web
+    runtime: static
+    repo: https://github.com/Z-zww/BarsAp
+    rootDir: mobile
+    buildCommand: npm ci && npx expo export --platform web
+    publishDir: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+
