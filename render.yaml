@@ -1,0 +1,25 @@
+# Render Blueprint — Drinker 后端
+# 用法：Render 控制台 → New → Blueprint → 选择 Z-zww/BarsAp → Apply
+# 密钥类变量（sync: false）创建后在服务面板 Environment 标签里手动填写
+services:
+  - type: web
+    name: drinker-api
+    runtime: node
+    repo: https://github.com/Z-zww/BarsAp
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20.19.4"
+      - key: TRANSLATE_MODEL
+        value: qwen-plus
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: DASHSCOPE_API_KEY
+        sync: false
