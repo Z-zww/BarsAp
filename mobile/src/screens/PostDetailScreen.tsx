@@ -1,17 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 import { api, resolveImg } from '../api';
 import { encryptText } from '../crypto';
 import { Post, CommentItem } from '../types';
 import { theme, spacing } from '../theme';
+import { useRealtime } from '../RealtimeContext';
 
 function formatTime(s: string) { return s ? s.replace('T', ' ').slice(0, 16) : ''; }
 
 export default function PostDetailScreen() {
   const route = useRoute<any>();
+  const navigation = useNavigation<any>();
   const { user } = useAuth();
+  const { event } = useRealtime();
   const [data, setData] = useState<{ post: Post; comments: CommentItem[] } | null>(null);
   const [comment, setComment] = useState('');
   const [error, setError] = useState('');
@@ -23,6 +26,7 @@ export default function PostDetailScreen() {
   }, [route.params.id]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (event?.type === 'community' && Number(event.postId) === Number(route.params.id)) load(); }, [event?.eventId, load, route.params.id]);
 
   const toggleLike = async () => {
     if (!user) return;
@@ -47,10 +51,10 @@ export default function PostDetailScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>{post.title}</Text>
-      <View style={styles.authorRow}>
+      <TouchableOpacity style={styles.authorRow} onPress={() => navigation.navigate('UserProfile', { userId: post.author_id })}>
         {post.author_avatar ? <Image source={{ uri: resolveImg(post.author_avatar) || undefined }} style={styles.avatarSmall} /> : null}
         <Text style={styles.meta}>@{post.author} · {formatTime(post.created_at)}</Text>
-      </View>
+      </TouchableOpacity>
       {postImg ? <Image source={{ uri: postImg }} style={styles.image} /> : null}
       {post.ingredients.length > 0 ? (
         <>
@@ -72,10 +76,10 @@ export default function PostDetailScreen() {
       <Text style={styles.section}>评论 {comments.length}</Text>
       {comments.map((c) => (
         <View key={c.id} style={styles.comment}>
-          <View style={styles.commentHead}>
+          <TouchableOpacity style={styles.commentHead} onPress={() => navigation.navigate('UserProfile', { userId: c.user_id })}>
             {c.avatar ? <Image source={{ uri: resolveImg(c.avatar) || undefined }} style={styles.avatarTiny} /> : null}
             <Text style={styles.commentAuthor}>@{c.username}</Text>
-          </View>
+          </TouchableOpacity>
           <Text style={styles.commentText}>{c.content}</Text>
           <Text style={styles.commentTime}>{formatTime(c.created_at)}</Text>
         </View>

@@ -28,6 +28,7 @@
     "web": { "favicon": "./assets/favicon.png" },
     "plugins": [
       "expo-web-browser",
+      "expo-notifications",
       [
         "expo-image-picker",
         {

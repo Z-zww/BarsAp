@@ -44,6 +44,7 @@ export function resolveImg(url: string | null | undefined): string | null {
 
 let token: string | null = null;
 export function setToken(t: string | null) { token = t; }
+export function getToken() { return token; }
 
 export async function loadToken(): Promise<string | null> {
   const t = await AsyncStorage.getItem(TOKEN_KEY);
@@ -123,8 +124,17 @@ export const api = {
   toggleFavorite: (drink: any) => request('POST', '/api/favorites', { drink }),
   myPosts: () => request('GET', '/api/posts' + qs({ mine: '1' })),
   setAvatar: (url: string) => request('POST', '/api/me/avatar', { url }),
+  userProfile: (id: number) => request('GET', '/api/users/' + id),
+  toggleFollow: (id: number) => request('POST', '/api/users/' + id + '/follow'),
+  conversations: () => request('GET', '/api/conversations'),
+  messages: (userId: number) => request('GET', '/api/messages/' + userId),
+  sendMessage: (userId: number, content: string) => request('POST', '/api/messages/' + userId, { content }),
+  notifications: () => request('GET', '/api/notifications'),
+  readNotifications: () => request('POST', '/api/notifications/read'),
+  registerPushToken: (pushToken: string, platform: string) => request('POST', '/api/push-token', { token: pushToken, platform }),
   drink: (id: string) => request('GET', '/api/drinks/' + encodeURIComponent(id)),
   posts: (sort?: string) => request('GET', '/api/posts' + qs({ sort })),
+  userPosts: (userId: number) => request('GET', '/api/posts' + qs({ userId })),
   post: (id: number) => request('GET', '/api/posts/' + id),
   createPost: (data: { title: string; ingredients: string[]; steps: string[]; image?: string }) => request('POST', '/api/posts', data),
   deletePost: (id: number) => request('DELETE', '/api/posts/' + id),

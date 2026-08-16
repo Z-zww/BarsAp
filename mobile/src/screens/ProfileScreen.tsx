@@ -5,10 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 import { getBase, loadApiBase, setApiBase, api, uploadImage, resolveImg } from '../api';
 import { theme, spacing } from '../theme';
+import { useRealtime } from '../RealtimeContext';
 
 export default function ProfileScreen() {
   const navigation = useNavigation<any>();
   const { user, loading, login, register, logout, updateUser } = useAuth();
+  const { connected } = useRealtime();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -68,7 +70,7 @@ export default function ProfileScreen() {
 
       <View style={styles.serverCard}>
         <Text style={styles.serverTitle}>服务器地址</Text>
-        <Text style={styles.serverDesc}>手机与电脑连同一 WiFi 时，填电脑的局域网 IP（默认已填好）。保存后立即生效。</Text>
+        <Text style={styles.serverDesc}>填写云端 API 地址；本地开发时也可使用电脑的局域网地址。保存后立即生效。</Text>
         <TextInput
           style={styles.input}
           placeholder="http://192.168.x.x:4000"
@@ -88,6 +90,7 @@ export default function ProfileScreen() {
             {user.avatar ? <Image source={{ uri: resolveImg(user.avatar) || undefined }} style={styles.avatarImg} /> : <Text style={styles.avatar}>🍹</Text>}
             <Text style={styles.username}>@{user.username}</Text>
             <Text style={styles.desc}>记录心情，调配属于你的那杯酒</Text>
+            <Text style={styles.connection}>{connected ? '● 实时连接已建立' : '○ 正在连接实时服务'}</Text>
             <View style={styles.avatarBtns}>
               <TouchableOpacity style={styles.avatarBtn} onPress={pickAvatarLib}><Text style={styles.avatarBtnText}>🖼️ 相册选头像</Text></TouchableOpacity>
               <TouchableOpacity style={styles.avatarBtn} onPress={takeAvatarPhoto}><Text style={styles.avatarBtnText}>📷 拍照</Text></TouchableOpacity>
@@ -96,6 +99,10 @@ export default function ProfileScreen() {
             <TouchableOpacity style={styles.libraryBtn} onPress={() => navigation.navigate('MyLibrary')}>
               <Text style={styles.libraryBtnText}>查看我的调酒配方</Text>
             </TouchableOpacity>
+            <View style={styles.socialBtns}>
+              <TouchableOpacity style={styles.socialBtn} onPress={() => navigation.navigate('Messages')}><Text style={styles.socialBtnText}>私信</Text></TouchableOpacity>
+              <TouchableOpacity style={styles.socialBtn} onPress={() => navigation.navigate('Notifications')}><Text style={styles.socialBtnText}>通知</Text></TouchableOpacity>
+            </View>
           </View>
           <TouchableOpacity style={styles.logoutBtn} onPress={logout}><Text style={styles.logoutText}>退出登录</Text></TouchableOpacity>
         </>
@@ -137,6 +144,10 @@ const styles = StyleSheet.create({
   libraryBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   username: { fontSize: 20, fontWeight: '700', color: theme.colors.text, marginTop: spacing(2) },
   desc: { fontSize: 14, color: theme.colors.muted, marginTop: spacing(1) },
+  connection: { fontSize: 12, color: theme.colors.primaryDark, marginTop: spacing(2) },
+  socialBtns: { flexDirection: 'row', gap: spacing(2), alignSelf: 'stretch', marginTop: spacing(2) },
+  socialBtn: { flex: 1, borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.bg },
+  socialBtnText: { color: theme.colors.primaryDark, fontSize: 14, fontWeight: '700' },
   loginTitle: { fontSize: 18, fontWeight: '700', color: theme.colors.text, marginBottom: spacing(2) },
   label: { fontSize: 14, fontWeight: '600', color: theme.colors.text, alignSelf: 'flex-start', marginTop: spacing(3) },
   error: { color: theme.colors.danger, fontSize: 14, marginTop: spacing(3) },

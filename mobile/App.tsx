@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from './src/AuthContext';
+import { RealtimeProvider } from './src/RealtimeContext';
 import { theme } from './src/theme';
 import TodayScreen from './src/screens/TodayScreen';
 import CalendarScreen from './src/screens/CalendarScreen';
@@ -16,6 +17,10 @@ import PostDetailScreen from './src/screens/PostDetailScreen';
 import CreatePostScreen from './src/screens/CreatePostScreen';
 import MyLibraryScreen from './src/screens/MyLibraryScreen';
 import MemoEditScreen from './src/screens/MemoEditScreen';
+import UserProfileScreen from './src/screens/UserProfileScreen';
+import MessagesScreen from './src/screens/MessagesScreen';
+import ChatScreen from './src/screens/ChatScreen';
+import NotificationsScreen from './src/screens/NotificationsScreen';
 
 export type RootStackParamList = {
   Tabs: undefined;
@@ -24,6 +29,10 @@ export type RootStackParamList = {
   CreatePost: undefined;
   MyLibrary: undefined;
   MemoEdit: { date: string; mood: string | null; note: string | null };
+  UserProfile: { userId: number };
+  Messages: undefined;
+  Chat: { userId: number; username?: string };
+  Notifications: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -63,6 +72,7 @@ export default function App() {
     <View style={styles.shell}>
       <View style={styles.phone}>
         <AuthProvider>
+          <RealtimeProvider>
           <NavigationContainer>
         <StatusBar style="dark" />
         <Stack.Navigator
@@ -80,8 +90,13 @@ export default function App() {
           <Stack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: '发布配方' }} />
           <Stack.Screen name="MyLibrary" component={MyLibraryScreen} options={{ title: '我的酒库' }} />
           <Stack.Screen name="MemoEdit" component={MemoEditScreen} options={{ title: '便签' }} />
+          <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ title: '用户主页' }} />
+          <Stack.Screen name="Messages" component={MessagesScreen} options={{ title: '私信' }} />
+          <Stack.Screen name="Chat" component={ChatScreen} options={({ route }: any) => ({ title: route.params?.username ? '@' + route.params.username : '私信' })} />
+          <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: '通知' }} />
         </Stack.Navigator>
           </NavigationContainer>
+          </RealtimeProvider>
         </AuthProvider>
       </View>
     </View>

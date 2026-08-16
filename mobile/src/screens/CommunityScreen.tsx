@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
@@ -6,10 +6,12 @@ import { api } from '../api';
 import { Post } from '../types';
 import { theme, spacing } from '../theme';
 import PostCard from '../components/PostCard';
+import { useRealtime } from '../RealtimeContext';
 
 export default function CommunityScreen() {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
+  const { event } = useRealtime();
   const [posts, setPosts] = useState<Post[]>([]);
   const [sort, setSort] = useState<'latest' | 'hot'>('latest');
   const [loading, setLoading] = useState(false);
@@ -21,15 +23,20 @@ export default function CommunityScreen() {
   }, [sort]);
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
+  useEffect(() => { if (event?.type === 'community') load(); }, [event?.eventId, load]);
 
   return (
     <View style={styles.container}>
       <View style={styles.top}>
         <Text style={styles.title}>社区</Text>
-        <View style={styles.sortGroup}>
+        <View style={styles.topActions}>
+          <TouchableOpacity style={styles.iconBtn} onPress={() => user ? navigation.navigate('Messages') : navigation.navigate('Profile')}><Text style={styles.iconText}>✉️</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.iconBtn} onPress={() => user ? navigation.navigate('Notifications') : navigation.navigate('Profile')}><Text style={styles.iconText}>🔔</Text></TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.sortGroup}>
           <TouchableOpacity onPress={() => setSort('latest')}><Text style={[styles.sort, sort === 'latest' && styles.sortActive]}>最新</Text></TouchableOpacity>
           <TouchableOpacity onPress={() => setSort('hot')}><Text style={[styles.sort, sort === 'hot' && styles.sortActive]}>热门</Text></TouchableOpacity>
-        </View>
       </View>
       <FlatList
         data={posts}
@@ -49,7 +56,10 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.bg, paddingTop: spacing(6) },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: spacing(5) },
   title: { fontSize: 28, fontWeight: '800', color: theme.colors.text },
-  sortGroup: { flexDirection: 'row', gap: spacing(3) },
+  topActions: { flexDirection: 'row', gap: spacing(2) },
+  iconBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: theme.colors.card, borderWidth: 1, borderColor: theme.colors.border },
+  iconText: { fontSize: 18 },
+  sortGroup: { flexDirection: 'row', gap: spacing(3), paddingHorizontal: spacing(5), marginTop: spacing(3) },
   sort: { fontSize: 15, color: theme.colors.muted, fontWeight: '600' },
   sortActive: { color: theme.colors.primaryDark },
   list: { paddingHorizontal: spacing(5), paddingBottom: spacing(16), gap: spacing(3), marginTop: spacing(3) },

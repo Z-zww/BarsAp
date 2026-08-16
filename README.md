@@ -15,6 +15,10 @@
 - **个人调酒配方**：个人酒库集中展示收藏酒品与自己发布的调酒配方，个人页可直接进入。
 - **社区**：发布调酒配方，浏览、点赞和评论他人的配方，支持「最新 / 热门」排序；成品图可从相册选择或使用相机拍摄。
 - **头像设置**：用户可从相册选择头像或使用相机拍摄并上传。
+- **用户互动**：支持访问用户主页、关注/取消关注、查看粉丝与配方数量，并显示实时在线状态。
+- **实时私信**：用户之间可以发送私信，前台通过 WebSocket 实时到达，包含会话列表、未读数量与已读状态。
+- **通知中心**：关注、私信、点赞和评论会生成站内通知；Android/iOS 正式构建可通过 Expo Push 接收后台系统通知。
+- **云端图片**：头像和社区配方图片会在后端压缩后直接保存到 Turso，不依赖服务器本地磁盘或额外对象存储。
 - **账号体系**：支持注册、登录和退出，心情、便签、收藏与社区内容按用户隔离。
 
 ## 🛠 技术栈
@@ -22,9 +26,10 @@
 | 部分 | 技术 |
 |------|------|
 | 移动端与 Web | React Native + Expo（SDK 57）+ TypeScript + React Navigation |
-| 后端 | Node.js + Express + SQLite（内置 `node:sqlite`，无原生依赖）|
+| 后端 | Node.js + Express + libSQL/Turso（无云配置时回退到本地 SQLite）|
+| 实时通信 | WebSocket（`ws`）+ Expo Push Notifications |
 | 认证 | 密码 scrypt 散列 + 随机 token（存库，可撤销）|
-| 数据 | SQLite 单文件数据库，酒品数据从 `server/data/drinks.json` 自动入库 |
+| 数据 | 本地开发使用 SQLite；生产环境可使用 Turso/libSQL，酒品数据从 `server/data/drinks.json` 自动入库 |
 
 ## 📁 目录结构
 
@@ -46,6 +51,7 @@ drinker/
         ├── components/ # MoodPicker / DrinkCard / PostCard
         ├── api.ts      # 后端客户端（自动探测后端地址）
         ├── AuthContext.tsx
+        └── RealtimeContext.tsx  # WebSocket 在线状态与实时事件
         └── ...
 ```
 
@@ -75,6 +81,15 @@ TURSO_AUTH_TOKEN=your-database-token
 cd server
 npm run migrate:cloud
 ```
+
+云端媒体、关注、私信和通知表会在后端启动时自动创建。可用下面的命令执行双用户端到端测试，测试数据会自动清理：
+
+```bash
+cd server
+npm run test:social
+```
+
+WebSocket 地址与 API 共用域名，例如 API 为 `https://drinker-api.example.com` 时，客户端会自动连接 `wss://drinker-api.example.com/ws`。
 
 ### 2. 启动移动端
 
@@ -118,8 +133,8 @@ TRANSLATE_MODEL=qwen-plus
 ## 🔐 隐私与安全
 
 - **不收集敏感个人信息**：注册仅需「用户名 + 密码」，不收集手机号、身份证等实名信息；密码 scrypt 加盐散列存储，登录 token 为随机值存库、可撤销。
-- **消息传输加密**：社区帖子/评论内容在传输时做 AES 简单加密（客户端加密、服务端解密后存入 SQLite）。
-- **数据存储**：心情、帖子、评论等全部数据只存于你自己的后端 SQLite，不经过第三方。
+- **消息传输加密**：社区帖子/评论内容在传输时做 AES 简单加密（客户端加密、服务端解密后存入你配置的数据库）。
+- **数据存储**：本地开发数据存于后端 SQLite；配置 Turso 后，用户、社区、消息、通知及媒体数据存于你自己的 Turso 云数据库，不经过第三方业务平台。
 - **无多余组件**：不含内容审核、后台管理、广告/统计 SDK。
 - **网络健壮性**：App 请求带 15 秒超时 + 自动重试（网络错误重试 2 次）。
 - **生产建议**：部署到公网时启用 HTTPS（TLS），并把 `usesCleartextTraffic` 关闭；`.env` 与数据库已被 `.gitignore` 忽略。
