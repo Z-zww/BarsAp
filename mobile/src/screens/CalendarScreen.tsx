@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../AuthContext';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { api } from '../api';
 import { MoodRecord } from '../types';
 import { localDateStr, monthStr } from '../dates';
@@ -17,6 +18,7 @@ function pad2(n: number) { return String(n).padStart(2, '0'); }
 
 export default function CalendarScreen() {
   const { user } = useAuth();
+  const navigation = useNavigation<any>();
   const [cursor, setCursor] = useState(new Date());
   const [moodMap, setMoodMap] = useState<Record<string, MoodRecord>>({});
   const [editing, setEditing] = useState<{ date: string; record: MoodRecord | null } | null>(null);
@@ -46,7 +48,7 @@ export default function CalendarScreen() {
     } catch (e) {}
   }, [user, cursor]);
 
-  useEffect(() => { load(); }, [load]);
+  useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -64,11 +66,18 @@ export default function CalendarScreen() {
     setEditing({ date, record: moodMap[date] || null });
   };
 
-  const onSaveDay = async (mood: string | null, note: string | null) => {
+  const onSaveDay = async (mood: string | null) => {
     if (!editing) return;
     const date = editing.date;
     setEditing(null);
-    try { await api.saveMood(date, mood, note); await load(); } catch (e) {}
+    try { await api.saveMood(date, mood); await load(); } catch (e) {}
+  };
+
+  const openMemo = (mood: string | null, note: string | null) => {
+    if (!editing) return;
+    const date = editing.date;
+    setEditing(null);
+    navigation.navigate('MemoEdit', { date, mood, note });
   };
 
   const moodCounts: Record<string, number> = {};
@@ -142,6 +151,7 @@ export default function CalendarScreen() {
         initialMood={editing && editing.record ? editing.record.mood : null}
         initialNote={editing && editing.record ? editing.record.note : null}
         onSave={onSaveDay}
+        onOpenMemo={openMemo}
         onClose={() => setEditing(null)}
       />
     </ScrollView>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { MOODS } from '../moods';
 import { theme, spacing } from '../theme';
 
@@ -8,26 +8,24 @@ interface Props {
   date: string;
   initialMood: string | null;
   initialNote: string | null;
-  onSave: (mood: string | null, note: string | null) => void;
+  onSave: (mood: string | null) => void;
+  onOpenMemo: (mood: string | null, note: string | null) => void;
   onClose: () => void;
 }
 
-export default function DayEditor({ visible, date, initialMood, initialNote, onSave, onClose }: Props) {
+export default function DayEditor({ visible, date, initialMood, initialNote, onSave, onOpenMemo, onClose }: Props) {
   const [mood, setMood] = useState<string | null>(null);
-  const [note, setNote] = useState('');
 
   useEffect(() => {
-    if (visible) { setMood(initialMood || null); setNote(initialNote || ''); }
-  }, [visible, date, initialMood, initialNote]);
-
-  const save = () => onSave(mood, note.trim() || null);
+    if (visible) setMood(initialMood || null);
+  }, [visible, date, initialMood]);
 
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <Text style={styles.title}>{date}</Text>
-          <Text style={styles.sub}>选择心情（可跳过，只写便签）</Text>
+          <Text style={styles.sub}>选择今天的心情</Text>
           <View style={styles.grid}>
             {MOODS.map((m) => (
               <TouchableOpacity key={m.slug} style={[styles.mood, mood === m.slug && styles.moodActive]} onPress={() => setMood(mood === m.slug ? null : m.slug)}>
@@ -37,18 +35,12 @@ export default function DayEditor({ visible, date, initialMood, initialNote, onS
             ))}
           </View>
           {mood ? <TouchableOpacity onPress={() => setMood(null)}><Text style={styles.clear}>✕ 清除心情</Text></TouchableOpacity> : null}
-          <Text style={[styles.sub, { marginTop: spacing(3) }]}>便签（记下今天的想法）</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="写点什么…"
-            placeholderTextColor={theme.colors.muted}
-            value={note}
-            onChangeText={setNote}
-            multiline
-          />
+          <TouchableOpacity style={styles.memoBtn} onPress={() => onOpenMemo(mood, initialNote)}>
+            <Text style={styles.memoBtnText}>✍️ 进入便签（记录想法）</Text>
+          </TouchableOpacity>
           <View style={styles.btnRow}>
             <TouchableOpacity style={[styles.btn, styles.cancel]} onPress={onClose}><Text style={styles.cancelText}>取消</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.btn, styles.save]} onPress={save}><Text style={styles.saveText}>保存</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.btn, styles.save]} onPress={() => onSave(mood)}><Text style={styles.saveText}>保存心情</Text></TouchableOpacity>
           </View>
         </View>
       </View>
@@ -67,7 +59,8 @@ const styles = StyleSheet.create({
   emoji: { fontSize: 28 },
   label: { fontSize: 12, color: theme.colors.text, marginTop: 2 },
   clear: { color: theme.colors.primaryDark, fontSize: 14, textAlign: 'center', marginTop: spacing(2), fontWeight: '600' },
-  input: { borderWidth: 1, borderColor: theme.colors.border, borderRadius: 12, padding: spacing(3), marginTop: spacing(2), color: theme.colors.text, fontSize: 15, minHeight: 80, textAlignVertical: 'top' },
+  memoBtn: { marginTop: spacing(3), borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', backgroundColor: '#F6E9E1' },
+  memoBtnText: { color: theme.colors.primaryDark, fontSize: 15, fontWeight: '700' },
   btnRow: { flexDirection: 'row', gap: spacing(2), marginTop: spacing(4) },
   btn: { flex: 1, borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center' },
   cancel: { backgroundColor: theme.colors.bg, borderWidth: 1, borderColor: theme.colors.border },

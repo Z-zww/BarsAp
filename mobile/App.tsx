@@ -15,6 +15,7 @@ import DrinkDetailScreen from './src/screens/DrinkDetailScreen';
 import PostDetailScreen from './src/screens/PostDetailScreen';
 import CreatePostScreen from './src/screens/CreatePostScreen';
 import MyLibraryScreen from './src/screens/MyLibraryScreen';
+import MemoEditScreen from './src/screens/MemoEditScreen';
 
 export type RootStackParamList = {
   Tabs: undefined;
@@ -22,6 +23,7 @@ export type RootStackParamList = {
   PostDetail: { id: number };
   CreatePost: undefined;
   MyLibrary: undefined;
+  MemoEdit: { date: string; mood: string | null; note: string | null };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -77,6 +79,7 @@ export default function App() {
           <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: '帖子' }} />
           <Stack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: '发布配方' }} />
           <Stack.Screen name="MyLibrary" component={MyLibraryScreen} options={{ title: '我的酒库' }} />
+          <Stack.Screen name="MemoEdit" component={MemoEditScreen} options={{ title: '便签' }} />
         </Stack.Navigator>
           </NavigationContainer>
         </AuthProvider>

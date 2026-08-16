@@ -3,8 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const https = require('https');
+const fs = require('fs');
+const multer = require('multer');
 const { decryptText } = require('./crypto');
-const { zhToEn, enToZhBatch, hasChinese } = require('./translate');
+const { zhToEn, enToZhBatch, translateDrinkDetails, hasChinese } = require('./translate');
 const { beijingDate, beijingNow } = require('./time');
 const { createDb } = require('./db');
 const { hashPassword, verifyPassword, newToken, requireAuth, optionalAuth } = require('./auth');
@@ -15,6 +17,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 app.use('/img', express.static(path.join(__dirname, '..', 'public', 'img'), { maxAge: '30d' }));
+app.use('/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
 
 const PORT = parseInt(process.env.PORT || '4000', 10);
 
@@ -28,6 +31,15 @@ function parseDrink(r) {
 }
 
 // TheCocktailDB 网络酒品 → 本应用结构
+const CATEGORY_ZH = {
+  'Ordinary Drink': '经典鸡尾酒', Cocktail: '鸡尾酒', Shake: '奶昔调饮',
+  'Other / Unknown': '其他调饮', Cocoa: '可可饮品', Shot: '烈酒杯',
+  'Coffee / Tea': '咖啡与茶饮', 'Homemade Liqueur': '自制利口酒',
+  'Punch / Party Drink': '潘趣与聚会饮品', Beer: '啤酒调饮',
+  'Soft Drink': '无酒精饮品', 'New Era Drinks': '现代鸡尾酒',
+};
+const ALCOHOL_ZH = { Alcoholic: '含酒精', 'Non alcoholic': '无酒精', 'Optional alcohol': '可选酒精' };
+
 function mapNetworkDrink(d) {
   if (!d || !d.strDrink) return null;
   const ingredients = [];
@@ -38,14 +50,16 @@ function mapNetworkDrink(d) {
   const steps = (d.strInstructions || '').split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
   if (steps.length === 0 && d.strInstructions) steps.push(String(d.strInstructions).trim());
   const kw = encodeURIComponent((d.strDrink || '') + ' 调酒');
+  const category = CATEGORY_ZH[d.strCategory] || d.strCategory || '鸡尾酒';
+  const alcoholic = ALCOHOL_ZH[d.strAlcoholic] || d.strAlcoholic || '';
   return {
     id: 'net-' + d.idDrink,
     name: d.strDrink,
     nameEn: d.strDrink,
-    category: d.strCategory || '经典',
+    category,
     moods: [],
     image: d.strDrinkThumb || '',
-    summary: (d.strCategory || '') + (d.strAlcoholic ? ' · ' + d.strAlcoholic : ''),
+    summary: category + (alcoholic ? ' · ' + alcoholic : ''),
     history: '',
     ingredients,
     steps,
@@ -64,6 +78,7 @@ function parsePost(r, meId) {
     steps: JSON.parse(r.steps),
     image: r.image, created_at: r.created_at,
     author: r.username,
+    author_avatar: r.author_avatar || null,
     likes_count: r.likes_count || 0,
     comments_count: r.comments_count || 0,
     liked_by_me: meId ? !!db.prepare('SELECT 1 FROM likes WHERE post_id = ? AND user_id = ?').get(r.id, meId) : false,
@@ -115,7 +130,8 @@ app.post('/api/auth/logout', requireAuth(db), (req, res) => {
 });
 
 app.get('/api/me', requireAuth(db), (req, res) => {
-  res.json({ user: req.user });
+  const u = db.prepare('SELECT id, username, avatar FROM users WHERE id = ?').get(req.user.id);
+  res.json({ user: { id: u.id, username: u.username, avatar: u.avatar || null } });
 });
 
 // ---------------- 心情 ----------------
@@ -142,9 +158,10 @@ app.get('/api/moods', requireAuth(db), (req, res) => {
 app.post('/api/moods', requireAuth(db), (req, res) => {
   const { date, mood, note } = req.body || {};
   if (!isDateStr(date)) return res.status(400).json({ error: 'date 需为 YYYY-MM-DD' });
-  if (mood && !MOOD_MAP[mood]) return res.status(400).json({ error: '未知心情' });
-  const m = mood || null;
-  const n = (note === undefined || note === null || note === '') ? null : String(note);
+  if (mood !== undefined && mood !== null && !MOOD_MAP[mood]) return res.status(400).json({ error: '未知心情' });
+  const existing = db.prepare('SELECT * FROM moods WHERE user_id = ? AND date = ?').get(req.user.id, date);
+  const m = mood !== undefined ? (mood || null) : (existing ? existing.mood : null);
+  const n = note !== undefined ? ((note === null || note === '') ? null : String(note)) : (existing ? existing.note : null);
   db.prepare('INSERT INTO moods (user_id, date, mood, note) VALUES (?, ?, ?, ?) ON CONFLICT(user_id, date) DO UPDATE SET mood = excluded.mood, note = excluded.note')
     .run(req.user.id, date, m, n);
   res.json({ ok: true });
@@ -229,10 +246,51 @@ app.get('/api/drinks/network', async (req, res) => {
   }).on('error', () => res.json([]));
 });
 
-app.get('/api/drinks/:id', (req, res) => {
+app.get('/api/drinks/:id', async (req, res) => {
+  if (req.params.id.startsWith('net-')) {
+    const networkId = req.params.id.slice(4);
+    const url = 'https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=' + encodeURIComponent(networkId);
+    return https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (response) => {
+      let data = '';
+      response.on('data', (chunk) => data += chunk);
+      response.on('end', async () => {
+        try {
+          const json = JSON.parse(data);
+          const drink = mapNetworkDrink((json.drinks || [])[0]);
+          if (!drink) return res.status(404).json({ error: '未找到该酒品' });
+          res.json(await translateDrinkDetails(drink));
+        } catch (e) { res.status(502).json({ error: '网络酒品详情加载失败' }); }
+      });
+    }).on('error', () => res.status(502).json({ error: '网络酒品详情加载失败' }));
+  }
   const r = db.prepare('SELECT * FROM drinks WHERE id = ?').get(req.params.id);
   if (!r) return res.status(404).json({ error: '未找到该酒品' });
   res.json(parseDrink(r));
+});
+
+// ---------------- 上传 / 头像 ----------------
+const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+fs.mkdirSync(uploadDir, { recursive: true });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const m = (file.originalname || '').match(/\.(\w+)$/);
+    const ext = m ? m[1] : 'jpg';
+    cb(null, Date.now() + '-' + Math.round(Math.random() * 1e9) + '.' + ext);
+  },
+});
+const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
+
+app.post('/api/upload', requireAuth(db), upload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: '未收到文件' });
+  res.json({ url: '/uploads/' + req.file.filename });
+});
+
+app.post('/api/me/avatar', requireAuth(db), (req, res) => {
+  const url = ((req.body || {}).url || '').trim();
+  if (!url) return res.status(400).json({ error: '缺少头像地址' });
+  db.prepare('UPDATE users SET avatar = ? WHERE id = ?').run(url, req.user.id);
+  res.json({ ok: true, avatar: url });
 });
 
 // ---------------- 收藏 / 个人酒库 ----------------
@@ -260,9 +318,9 @@ app.get('/api/posts', optionalAuth(db), (req, res) => {
   let rows;
   if (req.query.mine === '1') {
     if (!req.user) return res.status(401).json({ error: '未登录' });
-    rows = db.prepare('SELECT p.*, u.username, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id WHERE p.user_id = ?').all(req.user.id);
+    rows = db.prepare('SELECT p.*, u.username, u.avatar AS author_avatar, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id WHERE p.user_id = ?').all(req.user.id);
   } else {
-    rows = db.prepare('SELECT p.*, u.username, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id').all();
+    rows = db.prepare('SELECT p.*, u.username, u.avatar AS author_avatar, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id').all();
   }
   const meId = req.user ? req.user.id : null;
   const posts = rows.map((r) => parsePost(r, meId));
@@ -287,7 +345,7 @@ app.post('/api/posts', requireAuth(db), (req, res) => {
 app.get('/api/posts/:id', optionalAuth(db), (req, res) => {
   const r = db.prepare('SELECT p.*, u.username, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?').get(req.params.id);
   if (!r) return res.status(404).json({ error: '帖子不存在' });
-  const comments = db.prepare('SELECT c.id, c.content, c.created_at, u.username FROM comments c JOIN users u ON u.id = c.user_id WHERE c.post_id = ? ORDER BY c.created_at').all(r.id);
+  const comments = db.prepare('SELECT c.id, c.content, c.created_at, u.username, u.avatar FROM comments c JOIN users u ON u.id = c.user_id WHERE c.post_id = ? ORDER BY c.created_at').all(r.id);
   res.json({ post: parsePost(r, req.user ? req.user.id : null), comments });
 });
 

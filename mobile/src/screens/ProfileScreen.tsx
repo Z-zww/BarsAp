@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
-import { getBase, loadApiBase, setApiBase } from '../api';
+import { getBase, loadApiBase, setApiBase, api, uploadImage, resolveImg } from '../api';
 import { theme, spacing } from '../theme';
 
 export default function ProfileScreen() {
-  const { user, loading, login, register, logout } = useAuth();
+  const navigation = useNavigation<any>();
+  const { user, loading, login, register, logout, updateUser } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [serverUrl, setServerUrl] = useState('');
   const [savedHint, setSavedHint] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     loadApiBase().then((b) => setServerUrl(b));
@@ -20,6 +24,29 @@ export default function ProfileScreen() {
   const saveServer = async () => {
     const b = await setApiBase(serverUrl);
     setSavedHint('已保存：' + b);
+  };
+
+  const setAvatar = async (uri: string) => {
+    setUploading(true);
+    setError('');
+    try {
+      const r = await uploadImage(uri);
+      await api.setAvatar(r.url);
+      if (user) updateUser({ ...user, avatar: r.url });
+    } catch (e: any) { setError(e.message || '设置头像失败'); }
+    setUploading(false);
+  };
+  const pickAvatarLib = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) { setError('需要相册权限'); return; }
+    const result = await ImagePicker.launchImageLibraryAsync({ quality: 0.7 });
+    if (!result.canceled && result.assets && result.assets[0]) await setAvatar(result.assets[0].uri);
+  };
+  const takeAvatarPhoto = async () => {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) { setError('需要相机权限'); return; }
+    const result = await ImagePicker.launchCameraAsync({ quality: 0.7 });
+    if (!result.canceled && result.assets && result.assets[0]) await setAvatar(result.assets[0].uri);
   };
 
   const doLogin = async () => {
@@ -58,9 +85,17 @@ export default function ProfileScreen() {
       {user ? (
         <>
           <View style={styles.card}>
-            <Text style={styles.avatar}>🍹</Text>
+            {user.avatar ? <Image source={{ uri: resolveImg(user.avatar) || undefined }} style={styles.avatarImg} /> : <Text style={styles.avatar}>🍹</Text>}
             <Text style={styles.username}>@{user.username}</Text>
             <Text style={styles.desc}>记录心情，调配属于你的那杯酒</Text>
+            <View style={styles.avatarBtns}>
+              <TouchableOpacity style={styles.avatarBtn} onPress={pickAvatarLib}><Text style={styles.avatarBtnText}>🖼️ 相册选头像</Text></TouchableOpacity>
+              <TouchableOpacity style={styles.avatarBtn} onPress={takeAvatarPhoto}><Text style={styles.avatarBtnText}>📷 拍照</Text></TouchableOpacity>
+            </View>
+            {uploading ? <ActivityIndicator color={theme.colors.primary} style={{ marginTop: spacing(2) }} /> : null}
+            <TouchableOpacity style={styles.libraryBtn} onPress={() => navigation.navigate('MyLibrary')}>
+              <Text style={styles.libraryBtnText}>查看我的调酒配方</Text>
+            </TouchableOpacity>
           </View>
           <TouchableOpacity style={styles.logoutBtn} onPress={logout}><Text style={styles.logoutText}>退出登录</Text></TouchableOpacity>
         </>
@@ -94,6 +129,12 @@ const styles = StyleSheet.create({
   savedHint: { color: theme.colors.primaryDark, fontSize: 13, marginTop: spacing(2) },
   card: { backgroundColor: theme.colors.card, borderRadius: theme.radius, padding: spacing(5), borderWidth: 1, borderColor: theme.colors.border, marginTop: spacing(4), alignItems: 'center' },
   avatar: { fontSize: 56 },
+  avatarImg: { width: 88, height: 88, borderRadius: 44 },
+  avatarBtns: { flexDirection: 'row', gap: spacing(2), marginTop: spacing(4) },
+  avatarBtn: { borderRadius: 12, paddingVertical: spacing(2), paddingHorizontal: spacing(3), borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.bg },
+  avatarBtnText: { color: theme.colors.primaryDark, fontSize: 13, fontWeight: '600' },
+  libraryBtn: { alignSelf: 'stretch', borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', marginTop: spacing(3), backgroundColor: theme.colors.primary },
+  libraryBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   username: { fontSize: 20, fontWeight: '700', color: theme.colors.text, marginTop: spacing(2) },
   desc: { fontSize: 14, color: theme.colors.muted, marginTop: spacing(1) },
   loginTitle: { fontSize: 18, fontWeight: '700', color: theme.colors.text, marginBottom: spacing(2) },

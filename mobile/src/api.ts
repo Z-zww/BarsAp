@@ -57,6 +57,16 @@ export async function saveToken(t: string | null) {
   else await AsyncStorage.removeItem(TOKEN_KEY);
 }
 
+const USER_KEY = 'drinker_user';
+export async function saveUser(u: any) {
+  if (u) await AsyncStorage.setItem(USER_KEY, JSON.stringify(u));
+  else await AsyncStorage.removeItem(USER_KEY);
+}
+export async function loadUser(): Promise<any> {
+  const v = await AsyncStorage.getItem(USER_KEY);
+  return v ? JSON.parse(v) : null;
+}
+
 export class ApiError extends Error {}
 
 // 网络请求：15 秒超时 + 网络错误自动重试 2 次（适配不稳定网络环境）
@@ -104,7 +114,7 @@ export const api = {
   me: () => request('GET', '/api/me'),
   moodsToday: () => request('GET', '/api/moods/today'),
   moods: (month: string) => request('GET', '/api/moods' + qs({ month })),
-  saveMood: (date: string, mood: string | null, note?: string | null) => request('POST', '/api/moods', { date, mood, note }),
+  saveMood: (date: string, mood?: string | null, note?: string | null) => request('POST', '/api/moods', { date, mood, note }),
   deleteMood: (date: string) => request('DELETE', '/api/moods/' + encodeURIComponent(date)),
   drinks: (opts?: { mood?: string; q?: string; limit?: number }) => request('GET', '/api/drinks' + qs(opts || {})),
   drinksNetwork: (q: string) => request('GET', '/api/drinks/network' + qs({ q })),
@@ -112,6 +122,7 @@ export const api = {
   favorites: () => request('GET', '/api/favorites'),
   toggleFavorite: (drink: any) => request('POST', '/api/favorites', { drink }),
   myPosts: () => request('GET', '/api/posts' + qs({ mine: '1' })),
+  setAvatar: (url: string) => request('POST', '/api/me/avatar', { url }),
   drink: (id: string) => request('GET', '/api/drinks/' + encodeURIComponent(id)),
   posts: (sort?: string) => request('GET', '/api/posts' + qs({ sort })),
   post: (id: number) => request('GET', '/api/posts/' + id),
@@ -121,3 +132,14 @@ export const api = {
   comment: (id: number, content: string) => request('POST', '/api/posts/' + id + '/comments', { content }),
   deleteComment: (id: number) => request('DELETE', '/api/comments/' + id),
 };
+
+export async function uploadImage(uri: string): Promise<{ url: string }> {
+  const fd = new FormData();
+  fd.append('file', { uri, name: 'photo.jpg', type: 'image/jpeg' } as any);
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = 'Bearer ' + token;
+  const res = await fetch(getBase() + '/api/upload', { method: 'POST', headers, body: fd });
+  const data: any = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError((data && data.error) || ('上传失败 HTTP ' + res.status));
+  return data;
+}

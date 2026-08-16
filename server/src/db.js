@@ -17,6 +17,7 @@ function createDb() {
       username TEXT NOT NULL UNIQUE,
       salt TEXT NOT NULL,
       hash TEXT NOT NULL,
+      avatar TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS sessions (
@@ -79,6 +80,13 @@ function createDb() {
       UNIQUE(user_id, drink_id)
     );
   `);
+
+  // 迁移：users 表加 avatar 字段
+  const userCols = db.prepare('PRAGMA table_info(users)').all();
+  if (!userCols.some((c) => c.name === 'avatar')) {
+    db.exec('ALTER TABLE users ADD COLUMN avatar TEXT');
+    console.log('[db] migrated users.avatar');
+  }
 
   // 迁移：允许 mood 为 NULL（支持「只记便签、不填心情」）
   const moodCols = db.prepare('PRAGMA table_info(moods)').all();

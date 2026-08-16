@@ -7,14 +7,15 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "drinker",
-    "ios": {
-      "supportsTablet": true
-    },
+    "ios": { "supportsTablet": true },
     "android": {
       "package": "com.viaoff.drinker",
       "permissions": [
         "android.permission.INTERNET",
-        "android.permission.ACCESS_NETWORK_STATE"
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_EXTERNAL_STORAGE"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#F5EFE6",
@@ -24,25 +25,21 @@
       },
       "predictiveBackGestureEnabled": false
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
+    "web": { "favicon": "./assets/favicon.png" },
     "plugins": [
       "expo-web-browser",
       [
-        "expo-build-properties",
+        "expo-image-picker",
         {
-          "android": {
-            "usesCleartextTraffic": true
-          }
+          "photosPermission": "Allow Drinker to access photos for recipes and avatars.",
+          "cameraPermission": "Allow Drinker to use the camera for recipe photos and avatars."
         }
-      ]
+      ],
+      ["expo-build-properties", { "android": { "usesCleartextTraffic": true } }]
     ],
     "extra": {
       "apiUrl": "http://192.168.3.79:4000",
-      "eas": {
-        "projectId": "001fb06d-c247-4d1d-9909-0c07b3cea9af"
-      }
+      "eas": { "projectId": "001fb06d-c247-4d1d-9909-0c07b3cea9af" }
     },
     "owner": "viaoff"
   }

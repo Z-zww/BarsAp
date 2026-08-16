@@ -16,7 +16,8 @@ export default function DrinkDetailScreen() {
   const [favorited, setFavorited] = useState(false);
 
   useEffect(() => {
-    if (route.params.drink) { setDrink(route.params.drink); return; }
+    if (route.params.drink) setDrink(route.params.drink);
+    if (route.params.drink && !String(route.params.id).startsWith('net-')) return;
     (async () => {
       try { const d: any = await api.drink(route.params.id); setDrink(d); }
       catch (e: any) { setError(e.message || '加载失败'); }

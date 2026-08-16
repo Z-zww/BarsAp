@@ -1,11 +1,17 @@
 import CryptoJS from 'crypto-js';
 
-// 与服务端共享密钥（app.json 的 extra.secretKey 可覆盖；与服务端 DRINKER_SECRET 一致）
-const KEY = 'drinker-secret-2026-default';
+const SECRET = 'drinker-secret-2026-default';
+
+function key(): any {
+  return CryptoJS.enc.Utf8.parse((SECRET + 'K').padEnd(32, '0').slice(0, 32));
+}
+function iv(): any {
+  return CryptoJS.enc.Utf8.parse((SECRET + 'I').padEnd(16, '0').slice(0, 16));
+}
 
 export function encryptText(text: string): string {
   if (!text) return text;
-  return CryptoJS.AES.encrypt(text, KEY).toString();
+  return CryptoJS.AES.encrypt(text, key(), { iv: iv() }).toString();
 }
 
 export function encryptList(arr: string[]): string[] {

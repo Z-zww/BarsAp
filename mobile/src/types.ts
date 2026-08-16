@@ -20,6 +20,7 @@ export interface Drink {
 export interface Post {
   id: number;
   title: string;
+  author_avatar?: string | null;
   ingredients: string[];
   steps: string[];
   image: string | null;
@@ -35,6 +36,7 @@ export interface CommentItem {
   content: string;
   created_at: string;
   username: string;
+  avatar?: string | null;
 }
 
 export interface MoodRecord {
@@ -45,4 +47,4 @@ export interface MoodRecord {
   label: string;
 }
 
-export interface User { id: number; username: string; }
+export interface User { id: number; username: string; avatar?: string | null; }

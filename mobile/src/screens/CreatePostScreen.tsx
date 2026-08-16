@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { api } from '../api';
+import * as ImagePicker from 'expo-image-picker';
+import { api, uploadImage, resolveImg } from '../api';
 import { encryptText, encryptList } from '../crypto';
 import { theme, spacing } from '../theme';
 
@@ -11,6 +12,7 @@ export default function CreatePostScreen() {
   const [ingredients, setIngredients] = useState<string[]>(['']);
   const [steps, setSteps] = useState<string[]>(['']);
   const [image, setImage] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -22,6 +24,30 @@ export default function CreatePostScreen() {
   const addLine = (setList: React.Dispatch<React.SetStateAction<string[]>>) => setList((l) => [...l, '']);
   const removeLine = (list: string[], setList: React.Dispatch<React.SetStateAction<string[]>>, i: number) => setList(list.filter((_, idx) => idx !== i));
 
+  const doUpload = async (uri: string) => {
+    setUploading(true);
+    setError('');
+    try {
+      const r = await uploadImage(uri);
+      setImage(r.url);
+    } catch (e: any) { setError(e.message || '图片上传失败'); }
+    setUploading(false);
+  };
+
+  const pickFromLibrary = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) { setError('需要相册权限才能选择图片'); return; }
+    const result = await ImagePicker.launchImageLibraryAsync({ quality: 0.7 });
+    if (!result.canceled && result.assets && result.assets[0]) await doUpload(result.assets[0].uri);
+  };
+
+  const takePhoto = async () => {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) { setError('需要相机权限才能拍照'); return; }
+    const result = await ImagePicker.launchCameraAsync({ quality: 0.7 });
+    if (!result.canceled && result.assets && result.assets[0]) await doUpload(result.assets[0].uri);
+  };
+
   const submit = async () => {
     const ings = ingredients.map((s) => s.trim()).filter(Boolean);
     const stps = steps.map((s) => s.trim()).filter(Boolean);
@@ -30,7 +56,7 @@ export default function CreatePostScreen() {
     setSubmitting(true);
     setError('');
     try {
-      await api.createPost({ title: encryptText(title.trim()), ingredients: encryptList(ings), steps: encryptList(stps), image: image.trim() || undefined });
+      await api.createPost({ title: encryptText(title.trim()), ingredients: encryptList(ings), steps: encryptList(stps), image: image || undefined });
       navigation.goBack();
     } catch (e: any) { setError(e.message || '发布失败'); }
     setSubmitting(false);
@@ -59,8 +85,13 @@ export default function CreatePostScreen() {
       ))}
       <TouchableOpacity onPress={() => addLine(setSteps)}><Text style={styles.add}>＋ 添加步骤</Text></TouchableOpacity>
 
-      <Text style={styles.label}>成品图片链接（可选）</Text>
-      <TextInput style={styles.input} placeholder="https://…" placeholderTextColor={theme.colors.muted} value={image} onChangeText={setImage} autoCapitalize="none" />
+      <Text style={styles.label}>成品图（可选）</Text>
+      {image ? <Image source={{ uri: resolveImg(image) || undefined }} style={styles.preview} /> : null}
+      <View style={styles.imgRow}>
+        <TouchableOpacity style={styles.imgBtn} onPress={pickFromLibrary}><Text style={styles.imgBtnText}>🖼️ 从相册选择</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.imgBtn} onPress={takePhoto}><Text style={styles.imgBtnText}>📷 拍照</Text></TouchableOpacity>
+      </View>
+      {uploading ? <ActivityIndicator color={theme.colors.primary} style={{ marginTop: spacing(2) }} /> : null}
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <TouchableOpacity style={[styles.submitBtn, submitting && { opacity: 0.6 }]} onPress={submit} disabled={submitting}>
@@ -79,6 +110,10 @@ const styles = StyleSheet.create({
   lineInput: { flex: 1 },
   remove: { color: theme.colors.danger, fontSize: 18, paddingHorizontal: spacing(1) },
   add: { color: theme.colors.primaryDark, fontSize: 14, fontWeight: '600', marginTop: spacing(1) },
+  preview: { width: '100%', height: 180, borderRadius: theme.radius, marginTop: spacing(2) },
+  imgRow: { flexDirection: 'row', gap: spacing(2), marginTop: spacing(2) },
+  imgBtn: { flex: 1, borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.card },
+  imgBtnText: { color: theme.colors.primaryDark, fontSize: 14, fontWeight: '700' },
   error: { color: theme.colors.danger, fontSize: 14, marginTop: spacing(3) },
   submitBtn: { backgroundColor: theme.colors.primary, borderRadius: 12, paddingVertical: spacing(4), alignItems: 'center', marginTop: spacing(6) },
   submitText: { color: '#fff', fontSize: 16, fontWeight: '700' },

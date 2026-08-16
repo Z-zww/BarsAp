@@ -47,7 +47,10 @@ export default function PostDetailScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>{post.title}</Text>
-      <Text style={styles.meta}>@{post.author} · {formatTime(post.created_at)}</Text>
+      <View style={styles.authorRow}>
+        {post.author_avatar ? <Image source={{ uri: resolveImg(post.author_avatar) || undefined }} style={styles.avatarSmall} /> : null}
+        <Text style={styles.meta}>@{post.author} · {formatTime(post.created_at)}</Text>
+      </View>
       {postImg ? <Image source={{ uri: postImg }} style={styles.image} /> : null}
       {post.ingredients.length > 0 ? (
         <>
@@ -69,7 +72,10 @@ export default function PostDetailScreen() {
       <Text style={styles.section}>评论 {comments.length}</Text>
       {comments.map((c) => (
         <View key={c.id} style={styles.comment}>
-          <Text style={styles.commentAuthor}>@{c.username}</Text>
+          <View style={styles.commentHead}>
+            {c.avatar ? <Image source={{ uri: resolveImg(c.avatar) || undefined }} style={styles.avatarTiny} /> : null}
+            <Text style={styles.commentAuthor}>@{c.username}</Text>
+          </View>
           <Text style={styles.commentText}>{c.content}</Text>
           <Text style={styles.commentTime}>{formatTime(c.created_at)}</Text>
         </View>
@@ -101,6 +107,10 @@ const styles = StyleSheet.create({
   error: { color: theme.colors.danger, fontSize: 14 },
   title: { fontSize: 24, fontWeight: '800', color: theme.colors.text },
   meta: { fontSize: 13, color: theme.colors.muted, marginTop: spacing(2) },
+  authorRow: { flexDirection: 'row', alignItems: 'center', gap: spacing(2), marginTop: spacing(2) },
+  avatarSmall: { width: 20, height: 20, borderRadius: 10 },
+  avatarTiny: { width: 18, height: 18, borderRadius: 9 },
+  commentHead: { flexDirection: 'row', alignItems: 'center', gap: spacing(2) },
   image: { width: '100%', height: 200, borderRadius: theme.radius, marginTop: spacing(4) },
   section: { fontSize: 17, fontWeight: '700', color: theme.colors.text, marginTop: spacing(5), marginBottom: spacing(2) },
   item: { fontSize: 15, color: theme.colors.text, lineHeight: 26 },

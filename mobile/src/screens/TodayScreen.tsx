@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 import { api } from '../api';
 import { Drink, MoodRecord } from '../types';
@@ -41,7 +41,7 @@ export default function TodayScreen() {
     setRecLoading(false);
   }, []);
 
-  useEffect(() => { loadToday(); }, [loadToday]);
+  useFocusEffect(useCallback(() => { loadToday(); }, [loadToday]));
 
   useEffect(() => {
     if (moodLoaded && user && !todayMood && !promptedRef.current) {
@@ -117,13 +117,9 @@ export default function TodayScreen() {
             <ActivityIndicator color={theme.colors.primary} style={{ marginVertical: spacing(4) }} />
           ) : rec.length > 0 ? (
             <View>
-              {rec.map((d) => (
-                <View key={d.id} style={{ marginBottom: spacing(3) }}>
-                  <DrinkCard drink={d} onPress={() => navigation.navigate('DrinkDetail', { id: d.id, drink: d })} />
-                </View>
-              ))}
+              <DrinkCard drink={rec[0]} onPress={() => navigation.navigate('DrinkDetail', { id: rec[0].id, drink: rec[0] })} />
               <TouchableOpacity onPress={() => setBatch((b) => b + 1)}>
-                <Text style={styles.swap}>换一批 →</Text>
+                <Text style={styles.swap}>换一款 →</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -153,6 +149,17 @@ export default function TodayScreen() {
         </TouchableOpacity>
       ))}
 
+      {user ? (
+        <TouchableOpacity style={styles.memoCard} onPress={() => navigation.navigate('MemoEdit', { date: today, mood: todayMood ? todayMood.mood : null, note: todayMood ? todayMood.note : null })}>
+          <View style={styles.memoHeader}>
+            <Text style={styles.memoTitle}>今日便签</Text>
+            <Text style={styles.memoEdit}>{todayMood && todayMood.note ? '编辑' : '去记录'}</Text>
+          </View>
+          <Text style={todayMood && todayMood.note ? styles.memoText : styles.memoPlaceholder}>
+            {todayMood && todayMood.note ? todayMood.note : '写下今天的心情、灵感或一杯酒的记忆'}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
       <MoodPicker visible={pickerVisible} onSelect={onSelectMood} onSkip={onSkip} />
     </ScrollView>
   );
@@ -177,6 +184,12 @@ const styles = StyleSheet.create({
   changeText: { color: theme.colors.primaryDark, fontSize: 14, fontWeight: '600' },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: theme.colors.text, marginTop: spacing(6), marginBottom: spacing(3) },
   swap: { textAlign: 'center', color: theme.colors.primaryDark, fontSize: 15, fontWeight: '600', marginTop: spacing(3) },
+  memoCard: { backgroundColor: theme.colors.card, borderRadius: theme.radius, padding: spacing(4), borderWidth: 1, borderColor: theme.colors.border, marginTop: spacing(4) },
+  memoHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  memoTitle: { fontSize: 15, fontWeight: '700', color: theme.colors.primaryDark },
+  memoEdit: { fontSize: 13, fontWeight: '700', color: theme.colors.primaryDark },
+  memoText: { fontSize: 15, color: theme.colors.text, marginTop: spacing(2), lineHeight: 22 },
+  memoPlaceholder: { fontSize: 14, color: theme.colors.muted, marginTop: spacing(2) },
   empty: { color: theme.colors.muted, fontSize: 14, marginTop: spacing(2) },
   searchRow: { flexDirection: 'row', gap: spacing(2) },
   searchInput: { flex: 1, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 12, padding: spacing(3), color: theme.colors.text, fontSize: 15, backgroundColor: theme.colors.card },
