@@ -62,6 +62,20 @@ npm start        # 默认 http://localhost:4000
 首次启动会自动创建 SQLite 数据库并把 `server/data/drinks.json` 入库。
 验证：浏览器打开 <http://localhost:4000> 应返回 `{"ok":true,...}`。
 
+后端支持 Turso 云数据库。在 `server/.env` 配置以下变量后，启动时会自动连接云端；未配置则继续使用本地 SQLite：
+
+```env
+TURSO_DATABASE_URL=libsql://your-database.turso.io
+TURSO_AUTH_TOKEN=your-database-token
+```
+
+首次切换到 Turso 时，可运行一次迁移命令。它会复制本地数据并逐表核对数量，不会删除本地数据库：
+
+```bash
+cd server
+npm run migrate:cloud
+```
+
 ### 2. 启动移动端
 
 ```bash

@@ -1,4 +1,5 @@
 try { require('dotenv').config(); } catch (e) {}
+require('express-async-errors');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -71,7 +72,7 @@ function mapNetworkDrink(d) {
   };
 }
 
-function parsePost(r, meId) {
+async function parsePost(r, meId) {
   return {
     id: r.id, title: r.title,
     ingredients: JSON.parse(r.ingredients),
@@ -81,7 +82,7 @@ function parsePost(r, meId) {
     author_avatar: r.author_avatar || null,
     likes_count: r.likes_count || 0,
     comments_count: r.comments_count || 0,
-    liked_by_me: meId ? !!db.prepare('SELECT 1 FROM likes WHERE post_id = ? AND user_id = ?').get(r.id, meId) : false,
+    liked_by_me: meId ? !!(await db.prepare('SELECT 1 FROM likes WHERE post_id = ? AND user_id = ?').get(r.id, meId)) : false,
   };
 }
 
@@ -97,87 +98,87 @@ function isDateStr(s) {
 app.get('/', (req, res) => res.json({ ok: true, name: 'Drinker API', version: '1.0.0' }));
 
 // ---------------- 认证 ----------------
-app.post('/api/auth/register', (req, res) => {
+app.post('/api/auth/register', async (req, res) => {
   const username = ((req.body || {}).username || '').trim();
   const password = (req.body || {}).password || '';
   if (username.length < 2 || username.length > 20 || username.includes(' '))
     return res.status(400).json({ error: '用户名需 2-20 位，且不能含空格' });
   if (typeof password !== 'string' || password.length < 6)
     return res.status(400).json({ error: '密码至少 6 位' });
-  if (db.prepare('SELECT id FROM users WHERE username = ?').get(username))
+  if (await db.prepare('SELECT id FROM users WHERE username = ?').get(username))
     return res.status(409).json({ error: '用户名已存在' });
   const { salt, hash } = hashPassword(password);
-  const info = db.prepare('INSERT INTO users (username, salt, hash) VALUES (?, ?, ?)').run(username, salt, hash);
+  const info = await db.prepare('INSERT INTO users (username, salt, hash) VALUES (?, ?, ?)').run(username, salt, hash);
   const token = newToken();
-  db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, Number(info.lastInsertRowid));
+  await db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, Number(info.lastInsertRowid));
   res.status(201).json({ token, user: { id: Number(info.lastInsertRowid), username } });
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   const username = ((req.body || {}).username || '').trim();
   const password = (req.body || {}).password || '';
-  const u = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+  const u = await db.prepare('SELECT * FROM users WHERE username = ?').get(username);
   if (!u || !verifyPassword(password, u.salt, u.hash))
     return res.status(401).json({ error: '用户名或密码错误' });
   const token = newToken();
-  db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, u.id);
+  await db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, u.id);
   res.json({ token, user: { id: u.id, username: u.username } });
 });
 
-app.post('/api/auth/logout', requireAuth(db), (req, res) => {
-  db.prepare('DELETE FROM sessions WHERE token = ?').run(req.token);
+app.post('/api/auth/logout', requireAuth(db), async (req, res) => {
+  await db.prepare('DELETE FROM sessions WHERE token = ?').run(req.token);
   res.json({ ok: true });
 });
 
-app.get('/api/me', requireAuth(db), (req, res) => {
-  const u = db.prepare('SELECT id, username, avatar FROM users WHERE id = ?').get(req.user.id);
+app.get('/api/me', requireAuth(db), async (req, res) => {
+  const u = await db.prepare('SELECT id, username, avatar FROM users WHERE id = ?').get(req.user.id);
   res.json({ user: { id: u.id, username: u.username, avatar: u.avatar || null } });
 });
 
 // ---------------- 心情 ----------------
 app.get('/api/moods/meta', (req, res) => res.json(MOODS));
 
-app.get('/api/moods/today', requireAuth(db), (req, res) => {
+app.get('/api/moods/today', requireAuth(db), async (req, res) => {
   const today = beijingDate();
-  const row = db.prepare('SELECT date, mood, note FROM moods WHERE user_id = ? AND date = ?').get(req.user.id, today);
+  const row = await db.prepare('SELECT date, mood, note FROM moods WHERE user_id = ? AND date = ?').get(req.user.id, today);
   res.json({ date: today, mood: row ? { date: row.date, mood: row.mood, note: row.note, emoji: MOOD_MAP[row.mood] ? MOOD_MAP[row.mood].emoji : '', label: MOOD_MAP[row.mood] ? MOOD_MAP[row.mood].label : '' } : null });
 });
 
-app.get('/api/moods', requireAuth(db), (req, res) => {
+app.get('/api/moods', requireAuth(db), async (req, res) => {
   const month = req.query.month; // YYYY-MM
   let rows;
   if (month && /^[0-9]{4}-[0-9]{2}$/.test(month)) {
-    rows = db.prepare('SELECT date, mood, note FROM moods WHERE user_id = ? AND date LIKE ? ORDER BY date').all(req.user.id, month + '%');
+    rows = await db.prepare('SELECT date, mood, note FROM moods WHERE user_id = ? AND date LIKE ? ORDER BY date').all(req.user.id, month + '%');
   } else {
-    rows = db.prepare('SELECT date, mood, note FROM moods WHERE user_id = ? ORDER BY date').all(req.user.id);
+    rows = await db.prepare('SELECT date, mood, note FROM moods WHERE user_id = ? ORDER BY date').all(req.user.id);
   }
   const list = rows.map((r) => ({ date: r.date, mood: r.mood, note: r.note, emoji: MOOD_MAP[r.mood] ? MOOD_MAP[r.mood].emoji : '', label: MOOD_MAP[r.mood] ? MOOD_MAP[r.mood].label : '' }));
   res.json(list);
 });
 
-app.post('/api/moods', requireAuth(db), (req, res) => {
+app.post('/api/moods', requireAuth(db), async (req, res) => {
   const { date, mood, note } = req.body || {};
   if (!isDateStr(date)) return res.status(400).json({ error: 'date 需为 YYYY-MM-DD' });
   if (mood !== undefined && mood !== null && !MOOD_MAP[mood]) return res.status(400).json({ error: '未知心情' });
-  const existing = db.prepare('SELECT * FROM moods WHERE user_id = ? AND date = ?').get(req.user.id, date);
+  const existing = await db.prepare('SELECT * FROM moods WHERE user_id = ? AND date = ?').get(req.user.id, date);
   const m = mood !== undefined ? (mood || null) : (existing ? existing.mood : null);
   const n = note !== undefined ? ((note === null || note === '') ? null : String(note)) : (existing ? existing.note : null);
-  db.prepare('INSERT INTO moods (user_id, date, mood, note) VALUES (?, ?, ?, ?) ON CONFLICT(user_id, date) DO UPDATE SET mood = excluded.mood, note = excluded.note')
+  await db.prepare('INSERT INTO moods (user_id, date, mood, note) VALUES (?, ?, ?, ?) ON CONFLICT(user_id, date) DO UPDATE SET mood = excluded.mood, note = excluded.note')
     .run(req.user.id, date, m, n);
   res.json({ ok: true });
 });
 
-app.delete('/api/moods/:date', requireAuth(db), (req, res) => {
+app.delete('/api/moods/:date', requireAuth(db), async (req, res) => {
   if (!isDateStr(req.params.date)) return res.status(400).json({ error: 'date 需为 YYYY-MM-DD' });
-  db.prepare('DELETE FROM moods WHERE user_id = ? AND date = ?').run(req.user.id, req.params.date);
+  await db.prepare('DELETE FROM moods WHERE user_id = ? AND date = ?').run(req.user.id, req.params.date);
   res.json({ ok: true });
 });
 
 // ---------------- 酒品 ----------------
-app.get('/api/drinks', (req, res) => {
+app.get('/api/drinks', async (req, res) => {
   const mood = req.query.mood;
   const q = req.query.q ? String(req.query.q).toLowerCase() : '';
-  let rows = db.prepare('SELECT * FROM drinks').all().map(parseDrink);
+  let rows = (await db.prepare('SELECT * FROM drinks').all()).map(parseDrink);
   if (q) {
     rows = rows.filter((d) => (d.name + ' ' + (d.nameEn || '') + ' ' + (d.summary || '') + ' ' + (d.history || '') + ' ' + d.tags.join(' ')).toLowerCase().includes(q));
   }
@@ -206,11 +207,11 @@ function seededShuffle(arr, seed) {
 }
 
 // 每日推荐：心情匹配优先，按日期+批次轮换，可多推几款
-app.get('/api/drinks/recommend', (req, res) => {
+app.get('/api/drinks/recommend', async (req, res) => {
   const mood = req.query.mood;
   const date = req.query.date || beijingDate();
   const batch = parseInt(req.query.batch || '0', 10) || 0;
-  let rows = db.prepare('SELECT * FROM drinks').all().map(parseDrink);
+  let rows = (await db.prepare('SELECT * FROM drinks').all()).map(parseDrink);
   if (mood) {
     const match = rows.filter((d) => d.moods.includes(mood));
     const rest = rows.filter((d) => !d.moods.includes(mood));
@@ -263,7 +264,7 @@ app.get('/api/drinks/:id', async (req, res) => {
       });
     }).on('error', () => res.status(502).json({ error: '网络酒品详情加载失败' }));
   }
-  const r = db.prepare('SELECT * FROM drinks WHERE id = ?').get(req.params.id);
+  const r = await db.prepare('SELECT * FROM drinks WHERE id = ?').get(req.params.id);
   if (!r) return res.status(404).json({ error: '未找到该酒品' });
   res.json(parseDrink(r));
 });
@@ -286,50 +287,50 @@ app.post('/api/upload', requireAuth(db), upload.single('file'), (req, res) => {
   res.json({ url: '/uploads/' + req.file.filename });
 });
 
-app.post('/api/me/avatar', requireAuth(db), (req, res) => {
+app.post('/api/me/avatar', requireAuth(db), async (req, res) => {
   const url = ((req.body || {}).url || '').trim();
   if (!url) return res.status(400).json({ error: '缺少头像地址' });
-  db.prepare('UPDATE users SET avatar = ? WHERE id = ?').run(url, req.user.id);
+  await db.prepare('UPDATE users SET avatar = ? WHERE id = ?').run(url, req.user.id);
   res.json({ ok: true, avatar: url });
 });
 
 // ---------------- 收藏 / 个人酒库 ----------------
-app.get('/api/favorites', requireAuth(db), (req, res) => {
-  const rows = db.prepare('SELECT * FROM favorites WHERE user_id = ? ORDER BY created_at DESC, id DESC').all(req.user.id);
+app.get('/api/favorites', requireAuth(db), async (req, res) => {
+  const rows = await db.prepare('SELECT * FROM favorites WHERE user_id = ? ORDER BY created_at DESC, id DESC').all(req.user.id);
   res.json(rows.map((r) => JSON.parse(r.data)));
 });
 
-app.post('/api/favorites', requireAuth(db), (req, res) => {
+app.post('/api/favorites', requireAuth(db), async (req, res) => {
   const drink = (req.body || {}).drink || {};
   const id = drink.id;
   if (!id) return res.status(400).json({ error: '缺少酒品 id' });
-  const exists = db.prepare('SELECT 1 FROM favorites WHERE user_id = ? AND drink_id = ?').get(req.user.id, id);
+  const exists = await db.prepare('SELECT 1 FROM favorites WHERE user_id = ? AND drink_id = ?').get(req.user.id, id);
   if (exists) {
-    db.prepare('DELETE FROM favorites WHERE user_id = ? AND drink_id = ?').run(req.user.id, id);
+    await db.prepare('DELETE FROM favorites WHERE user_id = ? AND drink_id = ?').run(req.user.id, id);
     return res.json({ favorited: false });
   }
-  db.prepare('INSERT INTO favorites (user_id, drink_id, name, name_en, image, data) VALUES (?, ?, ?, ?, ?, ?)')
+  await db.prepare('INSERT INTO favorites (user_id, drink_id, name, name_en, image, data) VALUES (?, ?, ?, ?, ?, ?)')
     .run(req.user.id, id, drink.name || '', drink.nameEn || null, drink.image || null, JSON.stringify(drink));
   res.json({ favorited: true });
 });
 
 // ---------------- 社区 ----------------
-app.get('/api/posts', optionalAuth(db), (req, res) => {
+app.get('/api/posts', optionalAuth(db), async (req, res) => {
   let rows;
   if (req.query.mine === '1') {
     if (!req.user) return res.status(401).json({ error: '未登录' });
-    rows = db.prepare('SELECT p.*, u.username, u.avatar AS author_avatar, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id WHERE p.user_id = ?').all(req.user.id);
+    rows = await db.prepare('SELECT p.*, u.username, u.avatar AS author_avatar, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id WHERE p.user_id = ?').all(req.user.id);
   } else {
-    rows = db.prepare('SELECT p.*, u.username, u.avatar AS author_avatar, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id').all();
+    rows = await db.prepare('SELECT p.*, u.username, u.avatar AS author_avatar, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id').all();
   }
   const meId = req.user ? req.user.id : null;
-  const posts = rows.map((r) => parsePost(r, meId));
+  const posts = await Promise.all(rows.map((r) => parsePost(r, meId)));
   if (req.query.sort === 'hot') posts.sort((a, b) => (b.likes_count + b.comments_count * 2) - (a.likes_count + a.comments_count * 2));
   else posts.sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
   res.json(posts);
 });
 
-app.post('/api/posts', requireAuth(db), (req, res) => {
+app.post('/api/posts', requireAuth(db), async (req, res) => {
   const { title, ingredients, steps, image } = req.body || {};
   const decTitle = decryptText(title);
   if (typeof decTitle !== 'string' || decTitle.trim().length === 0 || decTitle.length > 100)
@@ -337,61 +338,72 @@ app.post('/api/posts', requireAuth(db), (req, res) => {
   const ings = Array.isArray(ingredients) ? ingredients.map((x) => decryptText(String(x))) : [];
   const stps = Array.isArray(steps) ? steps.map((x) => decryptText(String(x))) : [];
   if (stps.length === 0) return res.status(400).json({ error: '至少写一个步骤' });
-  const info = db.prepare('INSERT INTO posts (user_id, title, ingredients, steps, image, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+  const info = await db.prepare('INSERT INTO posts (user_id, title, ingredients, steps, image, created_at) VALUES (?, ?, ?, ?, ?, ?)')
     .run(req.user.id, decTitle.trim(), JSON.stringify(ings), JSON.stringify(stps), image || null, beijingNow());
   res.status(201).json({ id: Number(info.lastInsertRowid) });
 });
 
-app.get('/api/posts/:id', optionalAuth(db), (req, res) => {
-  const r = db.prepare('SELECT p.*, u.username, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?').get(req.params.id);
+app.get('/api/posts/:id', optionalAuth(db), async (req, res) => {
+  const r = await db.prepare('SELECT p.*, u.username, (SELECT COUNT(*) FROM likes l WHERE l.post_id = p.id) AS likes_count, (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?').get(req.params.id);
   if (!r) return res.status(404).json({ error: '帖子不存在' });
-  const comments = db.prepare('SELECT c.id, c.content, c.created_at, u.username, u.avatar FROM comments c JOIN users u ON u.id = c.user_id WHERE c.post_id = ? ORDER BY c.created_at').all(r.id);
-  res.json({ post: parsePost(r, req.user ? req.user.id : null), comments });
+  const comments = await db.prepare('SELECT c.id, c.content, c.created_at, u.username, u.avatar FROM comments c JOIN users u ON u.id = c.user_id WHERE c.post_id = ? ORDER BY c.created_at').all(r.id);
+  res.json({ post: await parsePost(r, req.user ? req.user.id : null), comments });
 });
 
-app.post('/api/posts/:id/like', requireAuth(db), (req, res) => {
-  const post = db.prepare('SELECT id FROM posts WHERE id = ?').get(req.params.id);
+app.post('/api/posts/:id/like', requireAuth(db), async (req, res) => {
+  const post = await db.prepare('SELECT id FROM posts WHERE id = ?').get(req.params.id);
   if (!post) return res.status(404).json({ error: '帖子不存在' });
-  const existing = db.prepare('SELECT 1 FROM likes WHERE post_id = ? AND user_id = ?').get(post.id, req.user.id);
-  if (existing) db.prepare('DELETE FROM likes WHERE post_id = ? AND user_id = ?').run(post.id, req.user.id);
-  else db.prepare('INSERT INTO likes (post_id, user_id) VALUES (?, ?)').run(post.id, req.user.id);
-  const count = db.prepare('SELECT COUNT(*) AS c FROM likes WHERE post_id = ?').get(post.id).c;
+  const existing = await db.prepare('SELECT 1 FROM likes WHERE post_id = ? AND user_id = ?').get(post.id, req.user.id);
+  if (existing) await db.prepare('DELETE FROM likes WHERE post_id = ? AND user_id = ?').run(post.id, req.user.id);
+  else await db.prepare('INSERT INTO likes (post_id, user_id) VALUES (?, ?)').run(post.id, req.user.id);
+  const count = (await db.prepare('SELECT COUNT(*) AS c FROM likes WHERE post_id = ?').get(post.id)).c;
   res.json({ liked: !existing, likes_count: count });
 });
 
-app.post('/api/posts/:id/comments', requireAuth(db), (req, res) => {
-  const post = db.prepare('SELECT id FROM posts WHERE id = ?').get(req.params.id);
+app.post('/api/posts/:id/comments', requireAuth(db), async (req, res) => {
+  const post = await db.prepare('SELECT id FROM posts WHERE id = ?').get(req.params.id);
   if (!post) return res.status(404).json({ error: '帖子不存在' });
   const content = decryptText(((req.body || {}).content || '').trim());
   if (!content || content.length > 500) return res.status(400).json({ error: '评论内容 1-500 字' });
   const now = beijingNow();
-  const info = db.prepare('INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)').run(post.id, req.user.id, content, now);
+  const info = await db.prepare('INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)').run(post.id, req.user.id, content, now);
   res.status(201).json({ id: Number(info.lastInsertRowid), username: req.user.username, content, created_at: now });
 });
 
-app.delete('/api/posts/:id', requireAuth(db), (req, res) => {
-  const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(req.params.id);
+app.delete('/api/posts/:id', requireAuth(db), async (req, res) => {
+  const post = await db.prepare('SELECT * FROM posts WHERE id = ?').get(req.params.id);
   if (!post) return res.status(404).json({ error: '帖子不存在' });
   if (post.user_id !== req.user.id) return res.status(403).json({ error: '只能删除自己的帖子' });
-  db.prepare('DELETE FROM comments WHERE post_id = ?').run(post.id);
-  db.prepare('DELETE FROM likes WHERE post_id = ?').run(post.id);
-  db.prepare('DELETE FROM posts WHERE id = ?').run(post.id);
+  await db.prepare('DELETE FROM comments WHERE post_id = ?').run(post.id);
+  await db.prepare('DELETE FROM likes WHERE post_id = ?').run(post.id);
+  await db.prepare('DELETE FROM posts WHERE id = ?').run(post.id);
   res.json({ ok: true });
 });
 
-app.delete('/api/comments/:id', requireAuth(db), (req, res) => {
-  const c = db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
+app.delete('/api/comments/:id', requireAuth(db), async (req, res) => {
+  const c = await db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
   if (!c) return res.status(404).json({ error: '评论不存在' });
   if (c.user_id !== req.user.id) return res.status(403).json({ error: '只能删除自己的评论' });
-  db.prepare('DELETE FROM comments WHERE id = ?').run(c.id);
+  await db.prepare('DELETE FROM comments WHERE id = ?').run(c.id);
   res.json({ ok: true });
 });
 
 // 404 兜底
 app.use((req, res) => res.status(404).json({ error: 'Not Found' }));
 
-app.listen(PORT, () => {
-  console.log('Drinker API listening on http://localhost:' + PORT);
+db.ready.then(() => {
+  app.listen(PORT, () => {
+    console.log('Drinker API listening on http://localhost:' + PORT);
+  });
+}).catch((error) => {
+  console.error('[db] startup failed:', error.message);
+  process.exitCode = 1;
+});
+
+app.use((error, req, res, next) => {
+  console.error('[api]', error);
+  if (res.headersSent) return next(error);
+  res.status(500).json({ error: '服务器内部错误' });
 });
 
 module.exports = app;
