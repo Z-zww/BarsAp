@@ -179,6 +179,45 @@ app.delete('/api/moods/:date', requireAuth(db), async (req, res) => {
   res.json({ ok: true });
 });
 
+// ---------------- 便签 ----------------
+app.get('/api/memos', requireAuth(db), async (req, res) => {
+  const date = req.query.date;
+  let rows;
+  if (date && isDateStr(date)) {
+    rows = await db.prepare('SELECT id, date, content, created_at FROM memos WHERE user_id = ? AND date = ? ORDER BY created_at DESC, id DESC').all(req.user.id, date);
+  } else {
+    rows = await db.prepare('SELECT id, date, content, created_at FROM memos WHERE user_id = ? ORDER BY date DESC, created_at DESC, id DESC').all(req.user.id);
+  }
+  res.json(rows);
+});
+
+app.post('/api/memos', requireAuth(db), async (req, res) => {
+  const { date, content } = req.body || {};
+  if (!isDateStr(date)) return res.status(400).json({ error: 'date 需为 YYYY-MM-DD' });
+  const c = content === undefined || content === null ? '' : String(content);
+  if (!c.trim()) return res.status(400).json({ error: '便签内容不能为空' });
+  const r = await db.prepare('INSERT INTO memos (user_id, date, content) VALUES (?, ?, ?)').run(req.user.id, date, c.trim());
+  res.json({ id: Number(r.lastInsertRowid), date, content: c.trim() });
+});
+
+app.patch('/api/memos/:id', requireAuth(db), async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) return res.status(400).json({ error: 'id 需为数字' });
+  const { content } = req.body || {};
+  const c = content === undefined || content === null ? '' : String(content);
+  if (!c.trim()) return res.status(400).json({ error: '便签内容不能为空' });
+  const r = await db.prepare('UPDATE memos SET content = ? WHERE id = ? AND user_id = ?').run(c.trim(), id, req.user.id);
+  if (r.changes === 0) return res.status(404).json({ error: '便签不存在' });
+  res.json({ ok: true });
+});
+
+app.delete('/api/memos/:id', requireAuth(db), async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) return res.status(400).json({ error: 'id 需为数字' });
+  await db.prepare('DELETE FROM memos WHERE id = ? AND user_id = ?').run(id, req.user.id);
+  res.json({ ok: true });
+});
+
 // ---------------- 酒品 ----------------
 app.get('/api/drinks', async (req, res) => {
   const mood = req.query.mood;

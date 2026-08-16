@@ -27,6 +27,13 @@ const SCHEMA_SQL = `
     note TEXT,
     UNIQUE(user_id, date)
   );
+  CREATE TABLE IF NOT EXISTS memos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    date TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
   CREATE TABLE IF NOT EXISTS drinks (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
@@ -112,6 +119,7 @@ const SCHEMA_SQL = `
   );
   CREATE INDEX IF NOT EXISTS idx_messages_users ON messages(sender_id, receiver_id, created_at);
   CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at);
+  CREATE INDEX IF NOT EXISTS idx_memos_user_date ON memos(user_id, date, created_at);
 `;
 
 function normalizeArgs(args) {
@@ -157,9 +165,30 @@ function createDb() {
   db.ready = (async () => {
     await client.executeMultiple(SCHEMA_SQL);
     await seedDrinks(client);
+    await migrateMemos(client);
     console.log('[db] connected to ' + (db.isCloud ? 'Turso cloud' : DB_PATH));
   })();
   return db;
+}
+
+async function migrateMemos(client) {
+  // 把旧的单条便签（moods.note）迁移到 memos 表；幂等：同用户同日同内容已存在则跳过
+  const res = await client.execute("SELECT user_id, date, note FROM moods WHERE note IS NOT NULL AND note != ''");
+  let migrated = 0;
+  for (const r of res.rows) {
+    const exists = await client.execute({
+      sql: 'SELECT 1 AS x FROM memos WHERE user_id = ? AND date = ? AND content = ? LIMIT 1',
+      args: [r.user_id, r.date, r.note],
+    });
+    if (exists.rows.length === 0) {
+      await client.execute({
+        sql: 'INSERT INTO memos (user_id, date, content) VALUES (?, ?, ?)',
+        args: [r.user_id, r.date, r.note],
+      });
+      migrated++;
+    }
+  }
+  if (migrated) console.log('[db] migrated ' + migrated + ' notes to memos');
 }
 
 async function seedDrinks(client) {
