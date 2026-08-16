@@ -14,6 +14,10 @@
 | :---: | :---: |
 | <img src="docs/screenshots/drinks.jpg" width="240"/> | <img src="docs/screenshots/create-post.jpg" width="240"/> |
 
+| 社区 | 帖子详情 |
+| :---: | :---: |
+| <img src="docs/screenshots/community.jpg" width="240"/> | <img src="docs/screenshots/post-detail.jpg" width="240"/> |
+
 ## ✨ 功能
 
 - **每日心情打卡**：每天第一次打开会询问并记录心情，支持 8 种 emoji 心情（开心/兴奋/平静/难过/焦虑/疲惫/孤独/生气），也可以跳过不填。
