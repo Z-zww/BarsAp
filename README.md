@@ -4,6 +4,16 @@
 心情用 emoji + 文字表达并同步到日历，每天根据你的心情，精选一款适合当下的酒，酒品详情包含中文历史渊源、
 配方、做法和视频教程。
 
+## 📸 项目截图
+
+| 今日推荐 | 心情日历 |
+| :---: | :---: |
+| <img src="docs/screenshots/today.jpg" width="240"/> | <img src="docs/screenshots/calendar.jpg" width="240"/> |
+
+| 酒库 | 发布配方 |
+| :---: | :---: |
+| <img src="docs/screenshots/drinks.jpg" width="240"/> | <img src="docs/screenshots/create-post.jpg" width="240"/> |
+
 ## ✨ 功能
 
 - **每日心情打卡**：每天第一次打开会询问并记录心情，支持 8 种 emoji 心情（开心/兴奋/平静/难过/焦虑/疲惫/孤独/生气），也可以跳过不填。
