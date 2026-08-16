@@ -7,13 +7,14 @@
 ## ✨ 功能
 
 - **每日心情打卡**：每天第一次打开会询问并记录心情，支持 8 种 emoji 心情（开心/兴奋/平静/难过/焦虑/疲惫/孤独/生气），也可以跳过不填。
-- **心情日历**：每日心情同步到月历；点击任意日期可选择心情，或进入独立便签页面补记内容。
-- **便签自动保存**：输入停止约 600ms 后自动保存，离开编辑页时也会提交最新草稿；返回首页或日历即可看到更新，无需重启 App。
-- **今日便签**：首页直接展示当天便签，并提供新建或继续编辑入口；所有文本输入框支持 Unicode 与 emoji。
+- **心情日历**：每日心情同步到月历，日历单元格严格对齐；点击任意日期弹出底部详情面板，可查看/修改当天心情、查看当天全部便签或新增便签，也可一键进入全部便签页。
+- **每日多条便签**：同一天可添加任意多条便签，支持新建、编辑、删除；编辑时输入停止约 600ms 自动保存，离开编辑页也会提交最新草稿，无需重启 App。
+- **全部便签页**：按日期分组、卡片式展示（带彩色标记条），右下角悬浮「＋」快速新建；长按任意便签可删除。
+- **今日便签**：首页展示当天便签数量与最新一条，可直接进入全部便签或新建；所有文本输入框支持 Unicode 与 emoji。
 - **每日酒品推荐**：每天根据你的心情，精选一款适合当下的酒，附历史渊源、配方、做法和视频链接，也可手动「换一款」。
 - **中英文酒库搜索**：支持按酒名、原料和关键词搜索内置酒库及 TheCocktailDB 网络酒库（600+ 款）。网络酒品显示中文名称、分类、酒精属性，并在详情页提供中文历史、配料和步骤。
 - **个人调酒配方**：个人酒库集中展示收藏酒品与自己发布的调酒配方，个人页可直接进入。
-- **社区**：发布调酒配方，浏览、点赞和评论他人的配方，支持「最新 / 热门」排序；成品图可从相册选择或使用相机拍摄。
+- **社区**：发布调酒配方，浏览、点赞和评论他人的配方，支持「最新 / 热门」排序；配方作者可在详情页删除自己的配方；成品图可从相册选择或使用相机拍摄。
 - **头像设置**：用户可从相册选择头像或使用相机拍摄并上传。
 - **用户互动**：支持访问用户主页、关注/取消关注、查看粉丝与配方数量，并显示实时在线状态。
 - **实时私信**：用户之间可以发送私信，前台通过 WebSocket 实时到达，包含会话列表、未读数量与已读状态。
@@ -35,11 +36,13 @@
 
 ```
 drinker/
+├── render.yaml      # Render Blueprint（后端服务 + Web 静态站点）
 ├── server/          # 后端 API
 │   ├── src/
-│   │   ├── index.js     # 全部路由（认证/心情/酒品/社区）
-│   │   ├── db.js        # SQLite 建表 + 酒品 seed
+│   │   ├── index.js     # 全部路由（认证/心情/便签/酒品/社区）
+│   │   ├── db.js        # SQLite/Turso 建表 + 酒品 seed + 旧便签迁移
 │   │   ├── auth.js      # 密码散列 + token 中间件
+│   │   ├── crypto.js    # 内容 AES 传输混淆（密钥可用 DRINKER_SECRET 覆盖）
 │   │   └── moods-meta.js
 │   ├── data/
 │   │   └── drinks.json  # 酒品数据库（源数据）
@@ -47,15 +50,15 @@ drinker/
 └── mobile/          # Expo React Native App
     ├── App.tsx         # 导航 + 认证 Provider
     └── src/
-        ├── screens/    # 今日/日历/便签/酒库/社区/我的 + 详情/发布页
-        ├── components/ # MoodPicker / DrinkCard / PostCard
+        ├── screens/    # 今日/日历/全部便签/便签编辑/酒库/社区/我的 + 详情/发布页
+        ├── components/ # MoodPicker / DrinkCard / PostCard / DayDetail / DayEditor
         ├── api.ts      # 后端客户端（自动探测后端地址）
         ├── AuthContext.tsx
         └── RealtimeContext.tsx  # WebSocket 在线状态与实时事件
         └── ...
 ```
 
-## 🚀 快速开始
+## 🚀 快速开始（本地开发）
 
 ### 1. 启动后端
 
@@ -89,7 +92,7 @@ cd server
 npm run test:social
 ```
 
-WebSocket 地址与 API 共用域名，例如 API 为 `https://drinker-api.example.com` 时，客户端会自动连接 `wss://drinker-api.example.com/ws`。
+WebSocket 地址与 API 共用域名，例如 API 为 `https://your-api.example.com` 时，客户端会自动连接 `wss://your-api.example.com/ws`。
 
 ### 2. 启动移动端
 
@@ -123,6 +126,23 @@ DASHSCOPE_API_KEY=your_api_key
 TRANSLATE_MODEL=qwen-plus
 ```
 
+## 🌐 生产部署（Render + EAS）
+
+项目根目录的 `render.yaml` 是 Render Blueprint，可在 [Render](https://render.com) 一键部署：
+
+- **后端 Web 服务**：`rootDir: server`，Build `npm ci`，Start `npm start`；需在 Environment 里填 `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` / `DASHSCOPE_API_KEY`。
+- **Web 静态站点**：`rootDir: mobile`，Build `npm ci && npx expo export --platform web`，Publish Directory `dist`；建议加一条 Rewrite `/* → /index.html`（SPA 刷新防 404）。
+
+Android 安装包用 EAS 构建：
+
+```bash
+cd mobile
+npx eas-cli login
+npx eas-cli build -p android --profile preview   # 产出 APK
+```
+
+Web 版对 iOS / 鸿蒙 NEXT 等无法安装 APK 的设备同样可用，直接通过浏览器访问即可（与 App 共用同一后端与数据）。
+
 ## 📱 Android 权限
 
 - `INTERNET` / `ACCESS_NETWORK_STATE`：连接后端、搜索网络酒库和加载图片。
@@ -133,11 +153,11 @@ TRANSLATE_MODEL=qwen-plus
 ## 🔐 隐私与安全
 
 - **不收集敏感个人信息**：注册仅需「用户名 + 密码」，不收集手机号、身份证等实名信息；密码 scrypt 加盐散列存储，登录 token 为随机值存库、可撤销。
-- **消息传输加密**：社区帖子/评论内容在传输时做 AES 简单加密（客户端加密、服务端解密后存入你配置的数据库）。
+- **内容传输**：社区帖子/评论内容在客户端做 AES 混淆后上传、服务端解密入库（共享密钥可用环境变量 `DRINKER_SECRET` 覆盖）。真正的传输安全依赖 HTTPS；生产部署务必启用 TLS。
 - **数据存储**：本地开发数据存于后端 SQLite；配置 Turso 后，用户、社区、消息、通知及媒体数据存于你自己的 Turso 云数据库，不经过第三方业务平台。
 - **无多余组件**：不含内容审核、后台管理、广告/统计 SDK。
 - **网络健壮性**：App 请求带 15 秒超时 + 自动重试（网络错误重试 2 次）。
-- **生产建议**：部署到公网时启用 HTTPS（TLS），并把 `usesCleartextTraffic` 关闭；`.env` 与数据库已被 `.gitignore` 忽略。
+- **生产建议**：`.env`、数据库与 SSH 私钥均已被 `.gitignore` 忽略，不会随仓库公开；部署到公网时启用 HTTPS（TLS），并关闭 `usesCleartextTraffic`。
 
 ## 📄 许可证
 
