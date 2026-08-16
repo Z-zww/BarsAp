@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 import { api, resolveImg } from '../api';
@@ -42,6 +42,16 @@ export default function PostDetailScreen() {
     setBusy(false);
   };
 
+  const confirmDelete = () => {
+    Alert.alert('删除配方', '确定删除这个配方吗？删除后不可恢复。', [
+      { text: '取消', style: 'cancel' },
+      { text: '删除', style: 'destructive', onPress: async () => {
+        try { await api.deletePost(route.params.id); } catch (e: any) { setError(e.message || '删除失败'); return; }
+        navigation.goBack();
+      } },
+    ]);
+  };
+
   if (error) return <View style={styles.center}><Text style={styles.error}>{error}</Text></View>;
   if (!data) return <View style={styles.center}><ActivityIndicator color={theme.colors.primary} /></View>;
 
@@ -72,6 +82,12 @@ export default function PostDetailScreen() {
       <TouchableOpacity style={[styles.likeBtn, post.liked_by_me && styles.likeBtnActive]} onPress={toggleLike} disabled={busy}>
         <Text style={styles.likeText}>{post.liked_by_me ? '❤️ 已赞' : '🤍 点赞'} · {post.likes_count}</Text>
       </TouchableOpacity>
+
+      {user && user.id === post.author_id ? (
+        <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete}>
+          <Text style={styles.deleteText}>🗑 删除我的配方</Text>
+        </TouchableOpacity>
+      ) : null}
 
       <Text style={styles.section}>评论 {comments.length}</Text>
       {comments.map((c) => (
@@ -121,6 +137,8 @@ const styles = StyleSheet.create({
   likeBtn: { marginTop: spacing(5), borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.card },
   likeBtnActive: { borderColor: theme.colors.like, backgroundColor: '#FBE9E9' },
   likeText: { fontSize: 16, fontWeight: '700', color: theme.colors.text },
+  deleteBtn: { marginTop: spacing(2), borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.card },
+  deleteText: { fontSize: 15, fontWeight: '700', color: theme.colors.danger },
   comment: { backgroundColor: theme.colors.card, borderRadius: 12, padding: spacing(3), marginTop: spacing(2), borderWidth: 1, borderColor: theme.colors.border },
   commentAuthor: { fontSize: 13, fontWeight: '700', color: theme.colors.primaryDark },
   commentText: { fontSize: 15, color: theme.colors.text, marginTop: spacing(1), lineHeight: 21 },

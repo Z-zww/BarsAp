@@ -141,6 +141,10 @@ export const api = {
   like: (id: number) => request('POST', '/api/posts/' + id + '/like'),
   comment: (id: number, content: string) => request('POST', '/api/posts/' + id + '/comments', { content }),
   deleteComment: (id: number) => request('DELETE', '/api/comments/' + id),
+  memos: (date?: string) => request('GET', '/api/memos' + qs({ date })),
+  createMemo: (date: string, content: string) => request('POST', '/api/memos', { date, content }),
+  updateMemo: (id: number, content: string) => request('PATCH', '/api/memos/' + id, { content }),
+  deleteMemo: (id: number) => request('DELETE', '/api/memos/' + id),
 };
 
 export async function uploadImage(uri: string): Promise<{ url: string }> {

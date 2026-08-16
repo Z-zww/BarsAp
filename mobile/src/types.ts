@@ -49,6 +49,13 @@ export interface MoodRecord {
   label: string;
 }
 
+export interface Memo {
+  id: number;
+  date: string;
+  content: string;
+  created_at: string;
+}
+
 export interface User { id: number; username: string; avatar?: string | null; }
 
 export interface DirectMessage {

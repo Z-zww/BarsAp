@@ -13,6 +13,7 @@ export default function TodayScreen() {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
   const [todayMood, setTodayMood] = useState<MoodRecord | null>(null);
+  const [todayMemos, setTodayMemos] = useState<any[]>([]);
   const [moodLoaded, setMoodLoaded] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
   const promptedRef = useRef(false);
@@ -24,10 +25,12 @@ export default function TodayScreen() {
   const [error, setError] = useState('');
 
   const loadToday = useCallback(async () => {
-    if (!user) { setTodayMood(null); setMoodLoaded(false); return; }
+    if (!user) { setTodayMood(null); setTodayMemos([]); setMoodLoaded(false); return; }
     try {
       const r: any = await api.moodsToday();
       setTodayMood(r.mood);
+      const ms: any = await api.memos(localDateStr());
+      setTodayMemos(ms || []);
     } catch (e: any) { setError(e.message || '加载失败'); }
     setMoodLoaded(true);
   }, [user]);
@@ -98,7 +101,6 @@ export default function TodayScreen() {
               <Text style={styles.moodEmoji}>{todayMood.emoji}</Text>
               <View style={styles.moodInfo}>
                 <Text style={styles.moodLabel}>今天 · {todayMood.label}</Text>
-                {todayMood.note ? <Text style={styles.moodNote}>{todayMood.note}</Text> : null}
               </View>
               <TouchableOpacity onPress={() => setPickerVisible(true)}><Text style={styles.changeText}>修改</Text></TouchableOpacity>
             </View>
@@ -150,13 +152,13 @@ export default function TodayScreen() {
       ))}
 
       {user ? (
-        <TouchableOpacity style={styles.memoCard} onPress={() => navigation.navigate('MemoEdit', { date: today, mood: todayMood ? todayMood.mood : null, note: todayMood ? todayMood.note : null })}>
+        <TouchableOpacity style={styles.memoCard} onPress={() => todayMemos.length > 0 ? navigation.navigate('Memos') : navigation.navigate('MemoEdit', { date: today })}>
           <View style={styles.memoHeader}>
             <Text style={styles.memoTitle}>今日便签</Text>
-            <Text style={styles.memoEdit}>{todayMood && todayMood.note ? '编辑' : '去记录'}</Text>
+            <Text style={styles.memoEdit}>{todayMemos.length > 0 ? todayMemos.length + ' 条 · 查看全部' : '去记录'}</Text>
           </View>
-          <Text style={todayMood && todayMood.note ? styles.memoText : styles.memoPlaceholder}>
-            {todayMood && todayMood.note ? todayMood.note : '写下今天的心情、灵感或一杯酒的记忆'}
+          <Text style={todayMemos.length > 0 ? styles.memoText : styles.memoPlaceholder}>
+            {todayMemos.length > 0 ? todayMemos[0].content : '写下今天的心情、灵感或一杯酒的记忆'}
           </Text>
         </TouchableOpacity>
       ) : null}

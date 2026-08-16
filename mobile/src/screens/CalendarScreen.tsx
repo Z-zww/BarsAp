@@ -9,6 +9,7 @@ import { localDateStr, monthStr } from '../dates';
 import { theme, spacing } from '../theme';
 import { MOOD_MAP } from '../moods';
 import DayEditor from '../components/DayEditor';
+import DayDetail from '../components/DayDetail';
 
 const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 const ACCENTS = ['#E07A5F', '#C2410C', '#0E7490', '#7C3AED', '#15803D', '#BE185D'];
@@ -21,9 +22,11 @@ export default function CalendarScreen() {
   const navigation = useNavigation<any>();
   const [cursor, setCursor] = useState(new Date());
   const [moodMap, setMoodMap] = useState<Record<string, MoodRecord>>({});
+  const [memoDays, setMemoDays] = useState<Record<string, number>>({});
+  const [recipeDays, setRecipeDays] = useState<Record<string, boolean>>({});
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [editing, setEditing] = useState<{ date: string; record: MoodRecord | null } | null>(null);
   const [accent, setAccent] = useState(theme.colors.primary);
-  const [recipeDays, setRecipeDays] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     AsyncStorage.getItem(ACCENT_KEY).then((v) => { if (v) setAccent(v); });
@@ -32,12 +35,18 @@ export default function CalendarScreen() {
   const pickAccent = (c: string) => { setAccent(c); AsyncStorage.setItem(ACCENT_KEY, c); };
 
   const load = useCallback(async () => {
-    if (!user) { setMoodMap({}); setRecipeDays({}); return; }
+    if (!user) { setMoodMap({}); setMemoDays({}); setRecipeDays({}); return; }
     try {
       const list: any = await api.moods(monthStr(cursor));
       const map: Record<string, MoodRecord> = {};
       for (const m of list) map[m.date] = m;
       setMoodMap(map);
+
+      const memos: any = await api.memos();
+      const md: Record<string, number> = {};
+      for (const m of (memos || [])) md[m.date] = (md[m.date] || 0) + 1;
+      setMemoDays(md);
+
       const posts: any = await api.myPosts();
       const rd: Record<string, boolean> = {};
       for (const p of (posts || [])) {
@@ -61,10 +70,9 @@ export default function CalendarScreen() {
   const today = localDateStr();
   const move = (delta: number) => setCursor(new Date(year, month + delta, 1));
 
-  const openDay = (day: number) => {
-    const date = year + '-' + pad2(month + 1) + '-' + pad2(day);
-    setEditing({ date, record: moodMap[date] || null });
-  };
+  const dateOf = (day: number) => year + '-' + pad2(month + 1) + '-' + pad2(day);
+
+  const openDay = (day: number) => setSelectedDate(dateOf(day));
 
   const onSaveDay = async (mood: string | null) => {
     if (!editing) return;
@@ -73,16 +81,17 @@ export default function CalendarScreen() {
     try { await api.saveMood(date, mood); await load(); } catch (e) {}
   };
 
-  const openMemo = (mood: string | null, note: string | null) => {
-    if (!editing) return;
-    const date = editing.date;
-    setEditing(null);
-    navigation.navigate('MemoEdit', { date, mood, note });
+  const changeMoodFromDetail = () => {
+    if (!selectedDate) return;
+    const date = selectedDate;
+    setSelectedDate(null);
+    setEditing({ date, record: moodMap[date] || null });
   };
 
   const moodCounts: Record<string, number> = {};
   for (const r of Object.values(moodMap)) if (r.mood) moodCounts[r.mood] = (moodCounts[r.mood] || 0) + 1;
   const summary = Object.entries(moodCounts);
+  const selectedRecord = selectedDate ? (moodMap[selectedDate] || null) : null;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -109,28 +118,33 @@ export default function CalendarScreen() {
           <View style={styles.grid}>
             {cells.map((day, i) => {
               if (day === null) return <View key={'e' + i} style={styles.cell} />;
-              const date = year + '-' + pad2(month + 1) + '-' + pad2(day);
+              const date = dateOf(day);
               const rec = moodMap[date];
               const isToday = date === today;
               const wd = new Date(year, month, day).getDay();
               const hasMood = !!(rec && rec.mood);
-              const hasNote = !!(rec && rec.note);
+              const hasMemo = (memoDays[date] || 0) > 0;
+              const badge = hasMood ? rec!.emoji : hasMemo ? '📝' : ' ';
               return (
                 <TouchableOpacity key={day} style={styles.cell} onPress={() => openDay(day)}>
                   <View style={[styles.dayInner, isToday && { backgroundColor: accent }]}>
                     <Text style={[styles.dayNum, isToday && styles.todayText, (wd === 0 || wd === 6) && !isToday && styles.weekend]}>{day}</Text>
-                    {hasMood ? <Text style={styles.dayEmoji}>{rec!.emoji}</Text> : hasNote ? <Text style={styles.dayEmoji}>📝</Text> : <Text style={styles.dayEmpty}> </Text>}
-                    {hasMood && hasNote ? <View style={[styles.noteDot, { backgroundColor: isToday ? '#fff' : accent }]} /> : null}
-                    {recipeDays[date] ? <Text style={styles.recipeDot}>🍹</Text> : null}
+                    <Text style={[styles.dayBadge, isToday && { color: '#fff' }]}>{badge}</Text>
+                    {recipeDays[date] ? <Text style={styles.recipeMark}>🍹</Text> : null}
                   </View>
                 </TouchableOpacity>
               );
             })}
           </View>
-          <TouchableOpacity style={[styles.recordBtn, { backgroundColor: accent }]} onPress={() => openDay(Number(today.slice(-2)))}>
-            <Text style={styles.recordBtnText}>记录 / 修改今天的心情</Text>
-          </TouchableOpacity>
-          <Text style={styles.tip}>💡 点任意日期可补填当天心情、写便签</Text>
+          <View style={styles.btnRow}>
+            <TouchableOpacity style={[styles.recordBtn, { backgroundColor: accent }]} onPress={() => openDay(Number(today.slice(-2)))}>
+              <Text style={styles.recordBtnText}>记录今天</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.memosBtn} onPress={() => navigation.navigate('Memos')}>
+              <Text style={styles.memosBtnText}>查看全部便签</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.tip}>💡 点任意日期可查看当天心情与便签</Text>
 
           {summary.length > 0 ? (
             <View style={styles.summaryCard}>
@@ -145,13 +159,21 @@ export default function CalendarScreen() {
           ) : null}
         </>
       )}
+
+      <DayDetail
+        visible={!!selectedDate}
+        date={selectedDate || ''}
+        moodEmoji={selectedRecord ? selectedRecord.emoji : undefined}
+        moodLabel={selectedRecord ? selectedRecord.label : undefined}
+        onClose={() => setSelectedDate(null)}
+        onChangeMood={changeMoodFromDetail}
+        onSeeAll={() => { setSelectedDate(null); navigation.navigate('Memos'); }}
+      />
       <DayEditor
         visible={!!editing}
         date={editing ? editing.date : ''}
         initialMood={editing && editing.record ? editing.record.mood : null}
-        initialNote={editing && editing.record ? editing.record.note : null}
         onSave={onSaveDay}
-        onOpenMemo={openMemo}
         onClose={() => setEditing(null)}
       />
     </ScrollView>
@@ -175,16 +197,17 @@ const styles = StyleSheet.create({
   weekday: { flex: 1, textAlign: 'center', color: theme.colors.muted, fontSize: 13, fontWeight: '600' },
   weekend: { color: theme.colors.primaryDark },
   grid: { flexDirection: 'row', flexWrap: 'wrap', marginTop: spacing(1) },
-  cell: { width: '14.28%', aspectRatio: 1, alignItems: 'center', justifyContent: 'center', padding: 2 },
-  dayInner: { width: '88%', aspectRatio: 1, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  dayNum: { fontSize: 15, color: theme.colors.text },
+  cell: { width: '14.28%', aspectRatio: 1, padding: 2 },
+  dayInner: { flex: 1, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  dayNum: { fontSize: 15, lineHeight: 20, color: theme.colors.text },
   todayText: { color: '#fff', fontWeight: '800' },
-  dayEmoji: { fontSize: 15, marginTop: 1 },
-  dayEmpty: { fontSize: 15, opacity: 0 },
-  noteDot: { width: 5, height: 5, borderRadius: 3, marginTop: 2 },
-  recipeDot: { fontSize: 9, lineHeight: 11 },
-  recordBtn: { borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', marginTop: spacing(5) },
+  dayBadge: { fontSize: 13, lineHeight: 18, marginTop: 0 },
+  recipeMark: { position: 'absolute', top: 2, right: 4, fontSize: 9, lineHeight: 12 },
+  btnRow: { flexDirection: 'row', gap: spacing(2), marginTop: spacing(5) },
+  recordBtn: { flex: 1, borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center' },
   recordBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  memosBtn: { flex: 1, borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.card },
+  memosBtnText: { color: theme.colors.primaryDark, fontSize: 15, fontWeight: '700' },
   tip: { fontSize: 12, color: theme.colors.muted, textAlign: 'center', marginTop: spacing(2) },
   summaryCard: { backgroundColor: theme.colors.card, borderRadius: theme.radius, padding: spacing(4), borderWidth: 1, borderColor: theme.colors.border, marginTop: spacing(4) },
   summaryTitle: { fontSize: 14, fontWeight: '700', color: theme.colors.text, marginBottom: spacing(2) },

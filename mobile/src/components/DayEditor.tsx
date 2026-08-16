@@ -7,13 +7,11 @@ interface Props {
   visible: boolean;
   date: string;
   initialMood: string | null;
-  initialNote: string | null;
   onSave: (mood: string | null) => void;
-  onOpenMemo: (mood: string | null, note: string | null) => void;
   onClose: () => void;
 }
 
-export default function DayEditor({ visible, date, initialMood, initialNote, onSave, onOpenMemo, onClose }: Props) {
+export default function DayEditor({ visible, date, initialMood, onSave, onClose }: Props) {
   const [mood, setMood] = useState<string | null>(null);
 
   useEffect(() => {
@@ -35,9 +33,6 @@ export default function DayEditor({ visible, date, initialMood, initialNote, onS
             ))}
           </View>
           {mood ? <TouchableOpacity onPress={() => setMood(null)}><Text style={styles.clear}>✕ 清除心情</Text></TouchableOpacity> : null}
-          <TouchableOpacity style={styles.memoBtn} onPress={() => onOpenMemo(mood, initialNote)}>
-            <Text style={styles.memoBtnText}>✍️ 进入便签（记录想法）</Text>
-          </TouchableOpacity>
           <View style={styles.btnRow}>
             <TouchableOpacity style={[styles.btn, styles.cancel]} onPress={onClose}><Text style={styles.cancelText}>取消</Text></TouchableOpacity>
             <TouchableOpacity style={[styles.btn, styles.save]} onPress={() => onSave(mood)}><Text style={styles.saveText}>保存心情</Text></TouchableOpacity>
@@ -59,8 +54,6 @@ const styles = StyleSheet.create({
   emoji: { fontSize: 28 },
   label: { fontSize: 12, color: theme.colors.text, marginTop: 2 },
   clear: { color: theme.colors.primaryDark, fontSize: 14, textAlign: 'center', marginTop: spacing(2), fontWeight: '600' },
-  memoBtn: { marginTop: spacing(3), borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center', backgroundColor: '#F6E9E1' },
-  memoBtnText: { color: theme.colors.primaryDark, fontSize: 15, fontWeight: '700' },
   btnRow: { flexDirection: 'row', gap: spacing(2), marginTop: spacing(4) },
   btn: { flex: 1, borderRadius: 12, paddingVertical: spacing(3), alignItems: 'center' },
   cancel: { backgroundColor: theme.colors.bg, borderWidth: 1, borderColor: theme.colors.border },

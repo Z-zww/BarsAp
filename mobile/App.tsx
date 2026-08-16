@@ -17,6 +17,7 @@ import PostDetailScreen from './src/screens/PostDetailScreen';
 import CreatePostScreen from './src/screens/CreatePostScreen';
 import MyLibraryScreen from './src/screens/MyLibraryScreen';
 import MemoEditScreen from './src/screens/MemoEditScreen';
+import MemosScreen from './src/screens/MemosScreen';
 import UserProfileScreen from './src/screens/UserProfileScreen';
 import MessagesScreen from './src/screens/MessagesScreen';
 import ChatScreen from './src/screens/ChatScreen';
@@ -28,7 +29,8 @@ export type RootStackParamList = {
   PostDetail: { id: number };
   CreatePost: undefined;
   MyLibrary: undefined;
-  MemoEdit: { date: string; mood: string | null; note: string | null };
+  MemoEdit: { date: string; memoId?: number; content?: string };
+  Memos: undefined;
   UserProfile: { userId: number };
   Messages: undefined;
   Chat: { userId: number; username?: string };
@@ -90,6 +92,7 @@ export default function App() {
           <Stack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: '发布配方' }} />
           <Stack.Screen name="MyLibrary" component={MyLibraryScreen} options={{ title: '我的酒库' }} />
           <Stack.Screen name="MemoEdit" component={MemoEditScreen} options={{ title: '便签' }} />
+          <Stack.Screen name="Memos" component={MemosScreen} options={{ title: '全部便签' }} />
           <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ title: '用户主页' }} />
           <Stack.Screen name="Messages" component={MessagesScreen} options={{ title: '私信' }} />
           <Stack.Screen name="Chat" component={ChatScreen} options={({ route }: any) => ({ title: route.params?.username ? '@' + route.params.username : '私信' })} />
