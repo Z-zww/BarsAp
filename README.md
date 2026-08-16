@@ -4,19 +4,10 @@
 心情用 emoji + 文字表达并同步到日历，每天根据你的心情，精选一款适合当下的酒，酒品详情包含中文历史渊源、
 配方、做法和视频教程。
 
-## 📸 项目截图
-
-| 今日推荐 | 心情日历 |
-| :---: | :---: |
-| <img src="docs/screenshots/today.jpg" width="240"/> | <img src="docs/screenshots/calendar.jpg" width="240"/> |
-
-| 酒库 | 发布配方 |
-| :---: | :---: |
-| <img src="docs/screenshots/drinks.jpg" width="240"/> | <img src="docs/screenshots/create-post.jpg" width="240"/> |
-
-| 社区 | 帖子详情 |
-| :---: | :---: |
-| <img src="docs/screenshots/community.jpg" width="240"/> | <img src="docs/screenshots/post-detail.jpg" width="240"/> |
+**Drinker** is a mood-driven drink companion for Android & Web. Record your daily mood with emoji, get a
+curated cocktail recommendation, keep multiple memos per day, and share DIY recipes in a community with
+likes, comments, follows, real-time chat and cloud sync. Built with React Native + Expo, Node.js + Express,
+and Turso/libSQL.
 
 ## ✨ 功能
 
@@ -35,6 +26,16 @@
 - **通知中心**：关注、私信、点赞和评论会生成站内通知；Android/iOS 正式构建可通过 Expo Push 接收后台系统通知。
 - **云端图片**：头像和社区配方图片会在后端压缩后直接保存到 Turso，不依赖服务器本地磁盘或额外对象存储。
 - **账号体系**：支持注册、登录和退出，心情、便签、收藏与社区内容按用户隔离。
+
+## 📸 界面预览
+
+| 今日推荐 | 心情日历 | 酒库 |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/today.jpg" width="200"/> | <img src="docs/screenshots/calendar.jpg" width="200"/> | <img src="docs/screenshots/drinks.jpg" width="200"/> |
+
+| 发布配方 | 社区 | 帖子详情 |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/create-post.jpg" width="200"/> | <img src="docs/screenshots/community.jpg" width="200"/> | <img src="docs/screenshots/post-detail.jpg" width="200"/> |
 
 ## 🛠 技术栈
 
